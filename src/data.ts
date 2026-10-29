@@ -115,3 +115,84 @@ export const education = [
 ];
 
 export const languages = ['Hebrew (native)', 'English (native)'];
+
+// Skill map for the home page. Projects are deliberately terse: what was done and
+// what it moved, not how.
+export type Case = { code: string; what: string; result?: string; stack?: string[]; href?: string };
+export type SubSkill = { name: string; cases?: Case[]; items?: string[] };
+export type SkillArea = { id: string; name: string; tagline: string; subs: SubSkill[] };
+
+export const skillAreas: SkillArea[] = [
+  {
+    id: 'ml',
+    name: 'Machine learning',
+    tagline: 'Models that decide who gets approved, flagged or forecast.',
+    subs: [
+      {
+        name: 'Classification',
+        cases: [
+          { code: 'Three Markets', what: 'Credit-risk scoring for lending in three countries, owned from the first feature to production monitoring.', result: '+0.07 ROC-AUC over baseline', stack: ['LightGBM', 'SHAP', 'Optuna'] },
+          { code: 'Quiet Signals', what: 'Fraud-detection rules for a lending population.', result: 'Fraud down 2.5%' },
+          { code: 'Network Effects', what: 'Behavioral and graph-based features feeding the risk models.', stack: ['Graph features', 'GNNs', 'Neptune'] },
+        ],
+      },
+      {
+        name: 'Regression',
+        cases: [
+          { code: 'Revaluation', what: 'Bond-risk research combining yield curves, convex optimization and machine learning.', stack: ['Convex optimization', 'Fixed income'], href: 'https://github.com/JuviHerman/Revaluations' },
+        ],
+      },
+      {
+        name: 'Time series',
+        cases: [
+          { code: 'Forward Look', what: 'Forecasts for Finance, built on trend and seasonality.', stack: ['Prophet'] },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'causal',
+    name: 'Causal inference',
+    tagline: 'Not who will pay, but who will pay because we acted.',
+    subs: [
+      {
+        name: 'Uplift modeling',
+        cases: [
+          { code: 'Second Call', what: 'A decisioning layer for Collections that picks each customer’s treatment by their estimated response.', stack: ['Uplift models', 'Causal inference'] },
+        ],
+      },
+      { name: 'Experimentation', items: ['A/B testing', 'Imbalanced data', 'Explainability', 'Drift monitoring'] },
+    ],
+  },
+  {
+    id: 'genai',
+    name: 'GenAI',
+    tagline: 'LLMs that do real work, measured before they ship.',
+    subs: [
+      {
+        name: 'LLM evaluations',
+        cases: [
+          { code: 'The Global Min', what: '900+ interview questions generated with LLMs and passed through automated quality checks before release.', result: 'Shipped on the App Store', href: 'https://theglobalmin.app' },
+        ],
+      },
+      {
+        name: 'Agentic workflows',
+        cases: [
+          { code: 'Autopilot', what: 'Agents that train models, validate feature accuracy and parse documents, with a human signing off at the checkpoints.', stack: ['Agent skills', 'MCP', 'AWS Bedrock'] },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'tools',
+    name: 'Tools',
+    tagline: 'What I reach for every day.',
+    subs: [
+      { name: 'Languages', items: ['Python', 'SQL', 'Gremlin'] },
+      { name: 'Building with AI', items: ['Claude Code', 'MCP', 'AWS Bedrock', 'OpenAI', 'RAG'] },
+      { name: 'Modeling', items: ['LightGBM', 'XGBoost', 'CatBoost', 'scikit-learn', 'PyTorch Geometric', 'Prophet', 'Optuna', 'SHAP'] },
+      { name: 'Production', items: ['MLflow', 'SageMaker', 'Docker', 'Lambda', 'Step Functions', 'Git'] },
+      { name: 'Data', items: ['AWS', 'Snowflake', 'Redshift', 'Neptune'] },
+    ],
+  },
+];

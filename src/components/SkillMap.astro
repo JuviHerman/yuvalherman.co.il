@@ -1,0 +1,109 @@
+---
+// Tabbed skill map. Without JS every panel is visible; the script turns it into tabs.
+import { skillAreas } from '../data';
+---
+<div class="skillmap">
+  <div class="tabs" role="tablist" aria-label="Skill areas" hidden>
+    {skillAreas.map((a, i) => (
+      <button type="button" role="tab" id={`tab-${a.id}`} aria-controls={`skill-${a.id}`} aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1}>
+        {a.name}
+      </button>
+    ))}
+  </div>
+
+  {skillAreas.map((a) => (
+    <section class="panel" id={`skill-${a.id}`} role="tabpanel" aria-labelledby={`tab-${a.id}`}>
+      <header class="panel-head">
+        <h3>{a.name}</h3>
+        <p class="muted">{a.tagline}</p>
+      </header>
+      {a.subs.map((s) => (
+        <div class="sub">
+          <h4>{s.name}</h4>
+          {s.cases ? (
+            <ul class="cases">
+              {s.cases.map((c) => (
+                <li>
+                  <p class="code">{c.href ? <a href={c.href}>{c.code}</a> : c.code}</p>
+                  <p class="what">{c.what}</p>
+                  {c.result && <p class="result num">{c.result}</p>}
+                  {c.stack && <ul class="tags">{c.stack.map((t) => <li>{t}</li>)}</ul>}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <ul class="items">{s.items?.map((t) => <li>{t}</li>)}</ul>
+          )}
+        </div>
+      ))}
+    </section>
+  ))}
+</div>
+
+<script>
+  const root = document.querySelector<HTMLElement>('.skillmap');
+  if (root) {
+    const list = root.querySelector<HTMLElement>('[role="tablist"]')!;
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    const panels = [...root.querySelectorAll<HTMLElement>('[role="tabpanel"]')];
+    list.hidden = false;
+    root.classList.add('enhanced');
+
+    const select = (i: number, focus = false) => {
+      tabs.forEach((t, j) => {
+        t.setAttribute('aria-selected', String(i === j));
+        t.tabIndex = i === j ? 0 : -1;
+        panels[j].hidden = i !== j;
+      });
+      if (focus) tabs[i].focus();
+    };
+
+    tabs.forEach((t, i) => {
+      t.addEventListener('click', () => select(i));
+      t.addEventListener('keydown', (e) => {
+        const n = tabs.length;
+        const next = { ArrowRight: (i + 1) % n, ArrowLeft: (i - 1 + n) % n, Home: 0, End: n - 1 }[e.key];
+        if (next !== undefined) { e.preventDefault(); select(next, true); }
+      });
+    });
+
+    // Links elsewhere on the page (the hero index) open a tab by hash.
+    const fromHash = () => {
+      const i = panels.findIndex((p) => `#${p.id}` === location.hash);
+      if (i >= 0) { select(i); root.scrollIntoView({ block: 'start' }); }
+    };
+    window.addEventListener('hashchange', fromHash);
+    select(Math.max(0, panels.findIndex((p) => `#${p.id}` === location.hash)));
+  }
+</script>
+
+<style>
+  .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 32px; }
+  [role='tab'] {
+    font: 600 1rem var(--font-display); color: var(--muted); background: transparent;
+    border: 1.5px solid var(--rule); border-radius: 999px; padding: 8px 18px; cursor: pointer;
+  }
+  [role='tab']:hover { color: var(--ink); border-color: var(--ink); }
+  [role='tab'][aria-selected='true'] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+  .panel + .panel { margin-top: 56px; }
+  .enhanced .panel + .panel { margin-top: 0; }
+  .panel-head { margin-bottom: 28px; }
+  .panel-head h3 { font-size: var(--step-3); margin-bottom: 0.15em; }
+  .enhanced .panel-head h3 { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .panel-head p { font-size: 1.2rem; margin: 0; }
+
+  .sub { display: grid; grid-template-columns: minmax(0, 200px) minmax(0, 1fr); gap: 12px 40px; padding: 22px 0; border-top: 1px solid var(--rule); }
+  .sub h4 { font: 650 1.1rem var(--font-display); margin: 0.15em 0 0; }
+  @media (max-width: 720px) { .sub { grid-template-columns: minmax(0, 1fr); } }
+
+  .cases { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 28px 36px; }
+  .cases p { margin: 0; }
+  .code { font: 700 1.25rem/1.2 var(--font-display); letter-spacing: -0.01em; margin-bottom: 6px !important; }
+  .code a { text-decoration-color: var(--rule); }
+  .what { color: var(--muted); font-size: 1rem; line-height: 1.5; }
+  .result { font: 650 1rem var(--font-display); color: var(--green); margin-top: 8px !important; }
+
+  .items { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 10px; }
+  .items li { font: 500 1rem var(--font-display); border: 1px solid var(--rule); border-radius: 8px; padding: 5px 12px; background: var(--surface); }
+</style>

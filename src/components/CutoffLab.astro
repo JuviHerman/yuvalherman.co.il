@@ -1,0 +1,207 @@
+---
+// Threshold tool over a synthetic loan book. Rendered fully at build time (works
+// without JS); the script recomputes when the cutoff or the economics change.
+import { applicants, roc, auc, rates, costCurve, costY, cutoffs, money, pct, MIN_CUT, MAX_CUT } from '../cutoff';
+
+const DEFAULT_LOSS = 1000;
+const DEFAULT_PROFIT = 250;
+const initialCut = 0.5;
+
+const S = 400; // shared score-axis width for strip and cost chart
+const CH = 96, CT = 8; // cost chart plot height and top offset
+const P = 300, pad = 8; // ROC plot size
+const X = (fpr: number) => pad + fpr * P;
+const Y = (tpr: number) => pad + P - tpr * P;
+const rocPath = roc.map(([f, t], i) => `${i ? 'L' : 'M'}${X(f).toFixed(1)} ${Y(t).toFixed(1)}`).join(' ');
+
+const curve = costCurve(DEFAULT_LOSS, DEFAULT_PROFIT);
+const cy = (v: number) => costY(v, curve, CT, CH);
+const costPath = curve.values.map((v, i) => `${i ? 'L' : 'M'}${(cutoffs[i] * S).toFixed(1)} ${cy(v).toFixed(1)}`).join(' ');
+const r0 = rates(initialCut);
+const c0 = curve.values[cutoffs.indexOf(initialCut)];
+---
+<div class="lab" data-s={S} data-ch={CH} data-ct={CT} data-p={P} data-pad={pad}>
+  <div class="lab-main">
+    <fieldset class="economics">
+      <legend>Your economics</legend>
+      <label>
+        <span>Loss when a defaulter is approved</span>
+        <span class="money-input"><span aria-hidden="true">$</span><input id="loss" type="number" inputmode="numeric" min="0" step="50" value={DEFAULT_LOSS} /></span>
+      </label>
+      <label>
+        <span>Profit lost when a good customer is declined</span>
+        <span class="money-input"><span aria-hidden="true">$</span><input id="profit" type="number" inputmode="numeric" min="0" step="50" value={DEFAULT_PROFIT} /></span>
+      </label>
+    </fieldset>
+
+    <svg class="strip" viewBox={`0 0 ${S} 40`} role="img" aria-label="Each tick is one applicant placed by risk score; red ticks later defaulted.">
+      <rect class="declined-zone" x={initialCut * S} y="0" width={(1 - initialCut) * S} height="40" />
+      {applicants.map((a) => (
+        <line x1={a.s * S} x2={a.s * S} y1={a.bad ? 2 : 12} y2={a.bad ? 28 : 38} class={a.bad ? 'tick bad' : 'tick good'} />
+      ))}
+      <line class="cut" x1={initialCut * S} x2={initialCut * S} y1="0" y2="40" />
+    </svg>
+
+    <div class="control">
+      <label for="cutoff">Decline above</label>
+      <input id="cutoff" type="range" min={MIN_CUT} max={MAX_CUT} step="0.01" value={initialCut} />
+      <output for="cutoff" class="num" id="cutoff-value">{initialCut.toFixed(2)}</output>
+    </div>
+
+    <svg class="cost" viewBox={`0 0 ${S} ${CT + CH + 18}`} role="img" aria-label="Total cost at each cutoff; the marked minimum is the best cutoff.">
+      <line class="baseline" x1="0" x2={S} y1={CT + CH} y2={CT + CH} />
+      <path class="cost-path" d={costPath} />
+      <line class="best-line" x1={curve.best * S} x2={curve.best * S} y1={CT} y2={CT + CH} />
+      <circle class="best-dot" cx={curve.best * S} cy={cy(curve.bestCost)} r="5" />
+      <circle class="cur-dot" cx={initialCut * S} cy={cy(c0)} r="5" />
+      <text x="0" y={CT + CH + 15} class="axis-text">Low risk</text>
+      <text x={S / 2} y={CT + CH + 15} class="axis-text" text-anchor="middle">Total cost by cutoff</text>
+      <text x={S} y={CT + CH + 15} class="axis-text" text-anchor="end">High risk</text>
+    </svg>
+
+    <div class="verdict" aria-live="polite">
+      <p>
+        Your cutoff costs <strong class="num" data-k="cost">{money(c0)}</strong>.
+        The best cutoff, <strong class="num best-text" data-k="best">{curve.best.toFixed(2)}</strong>,
+        costs <strong class="num best-text" data-k="bestCost">{money(curve.bestCost)}</strong>.
+      </p>
+      <button type="button" class="button ghost" id="use-best">Use the best cutoff</button>
+    </div>
+  </div>
+
+  <div class="lab-side">
+    <div class="axis-label">Defaulters stopped</div>
+    <svg class="plot" viewBox={`0 0 ${P + pad * 2} ${P + pad * 2}`} role="img" aria-label={`ROC curve, AUC ${auc.toFixed(2)}`}>
+      {[0.25, 0.5, 0.75].map((g) => (
+        <g class="grid"><line x1={X(g)} x2={X(g)} y1={Y(0)} y2={Y(1)} /><line x1={X(0)} x2={X(1)} y1={Y(g)} y2={Y(g)} /></g>
+      ))}
+      <rect class="frame" x={pad} y={pad} width={P} height={P} />
+      <line class="chance" x1={X(0)} y1={Y(0)} x2={X(1)} y2={Y(1)} />
+      <path class="curve" d={rocPath} pathLength="1" />
+      <circle class="best-dot" id="roc-best" cx={X(rates(curve.best).fpr)} cy={Y(rates(curve.best).tpr)} r="5" />
+      <circle class="cur-dot" id="roc-point" cx={X(r0.fpr)} cy={Y(r0.tpr)} r="6" />
+    </svg>
+    <div class="axis-label x">Good customers declined</div>
+
+    <dl class="stats">
+      <div><dt>Approved</dt><dd class="num" data-k="approved">{pct(r0.approved)}</dd></div>
+      <div><dt>Defaulters stopped</dt><dd class="num" data-k="tpr">{pct(r0.tpr)}</dd></div>
+      <div><dt>Good customers declined</dt><dd class="num" data-k="fpr">{pct(r0.fpr)}</dd></div>
+    </dl>
+    <p class="note muted">Synthetic book of {applicants.length} applicants, model AUC {auc.toFixed(2)}.</p>
+  </div>
+</div>
+
+<script>
+  import { rates, costCurve, costY, cutoffs, money, pct } from '../cutoff';
+
+  const lab = document.querySelector<HTMLElement>('.lab');
+  if (lab) {
+    const d = lab.dataset;
+    const S = Number(d.s), CH = Number(d.ch), CT = Number(d.ct), P = Number(d.p), pad = Number(d.pad);
+    const X = (v: number) => pad + v * P, Y = (v: number) => pad + P - v * P;
+    const $ = <T extends Element>(sel: string) => lab.querySelector<T>(sel)!;
+    const cutInput = $<HTMLInputElement>('#cutoff');
+    const lossInput = $<HTMLInputElement>('#loss');
+    const profitInput = $<HTMLInputElement>('#profit');
+    const field = (k: string) => $<HTMLElement>(`[data-k="${k}"]`);
+    const set = (el: Element, attrs: Record<string, number>) => {
+      for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v.toFixed(1));
+    };
+    const amount = (el: HTMLInputElement) => Math.max(0, Number(el.value) || 0);
+
+    let curve = costCurve(amount(lossInput), amount(profitInput));
+
+    const drawCost = () => {
+      curve = costCurve(amount(lossInput), amount(profitInput));
+      const cy = (v: number) => costY(v, curve, CT, CH);
+      $('.cost-path').setAttribute('d', curve.values.map((v, i) => `${i ? 'L' : 'M'}${(cutoffs[i] * S).toFixed(1)} ${cy(v).toFixed(1)}`).join(' '));
+      set($('.best-line'), { x1: curve.best * S, x2: curve.best * S });
+      set($('.cost .best-dot'), { cx: curve.best * S, cy: cy(curve.bestCost) });
+      const rb = rates(curve.best);
+      set($('#roc-best'), { cx: X(rb.fpr), cy: Y(rb.tpr) });
+      field('best').textContent = curve.best.toFixed(2);
+      field('bestCost').textContent = money(curve.bestCost);
+    };
+
+    const drawCut = () => {
+      const c = Number(cutInput.value);
+      const r = rates(c);
+      const v = curve.values[Math.round((c - cutoffs[0]) * 100)];
+      $<HTMLOutputElement>('#cutoff-value').value = c.toFixed(2);
+      set($('.declined-zone'), { x: c * S, width: (1 - c) * S });
+      set($('.cut'), { x1: c * S, x2: c * S });
+      set($('.cost .cur-dot'), { cx: c * S, cy: costY(v, curve, CT, CH) });
+      set($('#roc-point'), { cx: X(r.fpr), cy: Y(r.tpr) });
+      field('cost').textContent = money(v);
+      field('approved').textContent = pct(r.approved);
+      field('tpr').textContent = pct(r.tpr);
+      field('fpr').textContent = pct(r.fpr);
+      lab.classList.toggle('at-best', Math.abs(c - curve.best) < 0.005);
+    };
+
+    cutInput.addEventListener('input', drawCut);
+    for (const el of [lossInput, profitInput]) el.addEventListener('input', () => { drawCost(); drawCut(); });
+    $('#use-best').addEventListener('click', () => { cutInput.value = String(curve.best); drawCut(); });
+    drawCut();
+  }
+</script>
+
+<style>
+  .lab {
+    display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: clamp(24px, 4vw, 56px);
+    padding: clamp(18px, 3vw, 32px); background: var(--surface); border: 1px solid var(--rule); border-radius: 18px;
+  }
+  @media (max-width: 860px) { .lab { grid-template-columns: minmax(0, 1fr); } }
+  svg { display: block; width: 100%; height: auto; overflow: visible; }
+
+  .economics { border: 0; margin: 0 0 22px; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 14px 20px; align-items: end; }
+  @media (max-width: 520px) { .economics { grid-template-columns: 1fr; } }
+  legend { font-family: var(--font-display); font-weight: 650; font-size: 1.05rem; margin-bottom: 10px; padding: 0; }
+  .economics label { display: grid; gap: 6px; font-family: var(--font-display); font-size: 0.9rem; color: var(--muted); }
+  .money-input { display: flex; align-items: center; gap: 6px; border: 1.5px solid var(--rule); border-radius: 10px; padding: 0 12px; background: var(--paper); color: var(--ink); }
+  .money-input:focus-within { border-color: var(--focus); }
+  .money-input input { width: 100%; border: 0; background: transparent; color: inherit; font: 600 1.1rem var(--font-display); padding: 9px 0; font-variant-numeric: tabular-nums; }
+  .money-input input:focus { outline: none; }
+
+  .tick { stroke-width: 1; }
+  .tick.good { stroke: var(--green); opacity: 0.45; }
+  .tick.bad { stroke: var(--red); stroke-width: 1.3; }
+  .declined-zone { fill: var(--red); opacity: 0.1; }
+  .cut { stroke: var(--ink); stroke-width: 2; }
+
+  .control { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; margin: 12px 0 14px; font-family: var(--font-display); font-size: 0.95rem; }
+  .control output { min-width: 3ch; font-weight: 650; }
+  input[type='range'] { width: 100%; accent-color: var(--ink); min-height: 28px; }
+
+  .baseline { stroke: var(--rule); }
+  .cost-path { fill: none; stroke: var(--ink); stroke-width: 2.2; stroke-linejoin: round; }
+  .best-line { stroke: var(--green); stroke-width: 1.5; stroke-dasharray: 3 4; }
+  .best-dot { fill: var(--green); stroke: var(--surface); stroke-width: 2.5; }
+  .cur-dot { fill: var(--red); stroke: var(--surface); stroke-width: 2.5; }
+  .axis-text { font-family: var(--font-display); font-size: 11px; fill: var(--muted); }
+
+  .verdict { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 20px; margin-top: 18px; }
+  .verdict p { margin: 0; font-size: 1.05rem; line-height: 1.5; max-width: 40ch; }
+  .verdict strong { font-family: var(--font-display); }
+  .best-text { color: var(--green); }
+  .at-best #use-best { opacity: 0.45; pointer-events: none; }
+
+  .plot { max-width: 316px; margin: 0 auto; }
+  .frame { fill: none; stroke: var(--rule); }
+  .grid line { stroke: var(--rule); stroke-width: 0.8; opacity: 0.7; }
+  .chance { stroke: var(--muted); stroke-dasharray: 4 5; opacity: 0.6; }
+  .curve {
+    fill: none; stroke: var(--green); stroke-width: 3; stroke-linejoin: round;
+    stroke-dasharray: 1; stroke-dashoffset: 0;
+    animation: draw 1.4s cubic-bezier(.6, 0, .2, 1) both;
+  }
+  @keyframes draw { from { stroke-dashoffset: 1; } }
+  .axis-label { max-width: 316px; margin: 0 auto 4px; font-family: var(--font-display); font-size: 0.8rem; color: var(--muted); }
+  .axis-label.x { margin: 6px auto 0; text-align: right; }
+
+  .stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 22px 0 10px; }
+  .stats dt { font-family: var(--font-display); font-size: 0.8rem; color: var(--muted); line-height: 1.3; }
+  .stats dd { margin: 2px 0 0; font: 650 1.4rem var(--font-display); }
+  .note { font-size: var(--step--1); margin: 0; }
+</style>
