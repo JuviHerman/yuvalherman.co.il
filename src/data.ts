@@ -172,13 +172,26 @@ export const skillAreas: SkillArea[] = [
       {
         name: 'LLM evaluations',
         cases: [
-          { code: 'The Global Min', what: '900+ interview questions generated with LLMs and passed through automated quality checks before release.', result: 'Shipped on the App Store', href: 'https://theglobalmin.app' },
+          { code: 'Seven Readers', what: 'Seven LLMs from the leading AI labs, including Meta, Amazon, Google and Anthropic, put head to head on parsing financial documents, scored with metrics designed for the task.', result: 'Accuracy, price and latency compared', stack: ['Evaluation design', 'Document parsing'] },
         ],
       },
       {
         name: 'Agentic workflows',
         cases: [
           { code: 'Autopilot', what: 'Agents that train models, validate feature accuracy and parse documents, with a human signing off at the checkpoints.', stack: ['Agent skills', 'MCP', 'AWS Bedrock'] },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'apps',
+    name: 'Apps',
+    tagline: 'Products I build and ship on my own.',
+    subs: [
+      {
+        name: 'Mobile',
+        cases: [
+          { code: 'The Global Min', what: 'A data-science interview-prep app with 900+ adaptive scenario questions across nine topics, written with an LLM content pipeline and automated quality checks.', result: 'On the App Store', stack: ['SwiftUI', 'LLM content pipeline'], href: 'https://theglobalmin.app' },
         ],
       },
     ],
