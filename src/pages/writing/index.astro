@@ -1,0 +1,18 @@
+---
+import Base from '../../layouts/Base.astro';
+import PostList from '../../components/PostList.astro';
+import { getPosts } from '../../lib';
+const posts = await getPosts();
+---
+<Base title="Writing" description="Notes on credit risk, model evaluation, causal inference and applied AI.">
+  <div class="wrap page">
+    <h1>Writing</h1>
+    <p class="intro muted prose">Notes on credit risk, model evaluation, causal inference and applied AI. Subscribe with <a href="/rss.xml">RSS</a>.</p>
+    <PostList posts={posts} />
+  </div>
+</Base>
+
+<style>
+  .page { padding-top: clamp(24px, 5vw, 56px); padding-bottom: 72px; max-width: 880px; }
+  .intro { margin-bottom: 40px; }
+</style>

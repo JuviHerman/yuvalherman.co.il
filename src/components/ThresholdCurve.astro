@@ -1,0 +1,171 @@
+---
+// Interactive ROC curve over a synthetic loan book. Rendered fully at build time
+// (works without JS); the script only moves the cutoff.
+
+function mulberry32(seed: number) {
+  return () => {
+    seed |= 0; seed = (seed + 0x6d2b79f5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+const rand = mulberry32(20200);
+const normal = () => Math.sqrt(-2 * Math.log(1 - rand())) * Math.cos(2 * Math.PI * rand());
+const sigmoid = (z: number) => 1 / (1 + Math.exp(-z));
+
+// Risk score: higher means more likely to default.
+const applicants = [
+  ...Array.from({ length: 400 }, () => ({ s: sigmoid(normal() * 1.05 - 0.75), bad: 0 })),
+  ...Array.from({ length: 96 }, () => ({ s: sigmoid(normal() * 1.05 + 0.55), bad: 1 })),
+].map((a) => ({ s: Math.round(a.s * 1000) / 1000, bad: a.bad }));
+
+const nBad = applicants.filter((a) => a.bad).length;
+const nGood = applicants.length - nBad;
+
+// ROC points from strictest to most lenient cutoff.
+const sorted = [...applicants].sort((a, b) => b.s - a.s);
+const roc: [number, number][] = [[0, 0]];
+let tp = 0, fp = 0;
+for (const a of sorted) {
+  a.bad ? tp++ : fp++;
+  roc.push([fp / nGood, tp / nBad]);
+}
+let auc = 0;
+for (let i = 1; i < roc.length; i++) auc += (roc[i][0] - roc[i - 1][0]) * (roc[i][1] + roc[i - 1][1]) / 2;
+
+const P = 340; // plot size in viewBox units
+const pad = 8;
+const X = (fpr: number) => pad + fpr * P;
+const Y = (tpr: number) => pad + P - tpr * P;
+const path = roc.map(([f, t], i) => `${i ? 'L' : 'M'}${X(f).toFixed(1)} ${Y(t).toFixed(1)}`).join(' ');
+
+const initial = 0.5;
+const rates = (cut: number) => {
+  const declined = applicants.filter((a) => a.s >= cut);
+  return {
+    tpr: declined.filter((a) => a.bad).length / nBad,
+    fpr: declined.filter((a) => !a.bad).length / nGood,
+    approved: (applicants.length - declined.length) / applicants.length,
+  };
+};
+const r0 = rates(initial);
+const pct = (v: number) => `${Math.round(v * 100)}%`;
+const S = 400; // strip width
+---
+<figure class="tc" data-applicants={JSON.stringify(applicants)} data-nbad={nBad} data-ngood={nGood}>
+  <svg class="strip" viewBox={`0 0 ${S} 56`} role="img" aria-label="Each tick is one applicant placed by risk score; red ticks later defaulted.">
+    <rect class="declined-zone" x={initial * S} y="0" width={(1 - initial) * S} height="44" />
+    {applicants.map((a) => (
+      <line x1={a.s * S} x2={a.s * S} y1={a.bad ? 4 : 14} y2={a.bad ? 30 : 40} class={a.bad ? 'tick bad' : 'tick good'} />
+    ))}
+    <line class="cut" x1={initial * S} x2={initial * S} y1="0" y2="44" />
+    <text x="0" y="54" class="axis-text">Low risk</text>
+    <text x={S} y="54" class="axis-text" text-anchor="end">High risk</text>
+  </svg>
+
+  <div class="control">
+    <label for="cutoff">Decline cutoff</label>
+    <input id="cutoff" type="range" min="0.05" max="0.95" step="0.01" value={initial} />
+    <output for="cutoff" class="num" id="cutoff-value">{initial.toFixed(2)}</output>
+  </div>
+
+  <div class="axis-label y">Defaulters stopped</div>
+  <svg class="plot" viewBox={`0 0 ${P + pad * 2} ${P + pad * 2}`} role="img" aria-labelledby="tc-desc">
+    <desc id="tc-desc">ROC curve of a synthetic credit model with AUC {auc.toFixed(2)}.</desc>
+    {[0.25, 0.5, 0.75].map((g) => (
+      <g class="grid"><line x1={X(g)} x2={X(g)} y1={Y(0)} y2={Y(1)} /><line x1={X(0)} x2={X(1)} y1={Y(g)} y2={Y(g)} /></g>
+    ))}
+    <rect class="frame" x={pad} y={pad} width={P} height={P} />
+    <line class="chance" x1={X(0)} y1={Y(0)} x2={X(1)} y2={Y(1)} />
+    <path class="curve" d={path} pathLength="1" />
+    <line class="guide" id="guide-x" x1={X(r0.fpr)} x2={X(r0.fpr)} y1={Y(0)} y2={Y(r0.tpr)} />
+    <line class="guide" id="guide-y" x1={X(0)} x2={X(r0.fpr)} y1={Y(r0.tpr)} y2={Y(r0.tpr)} />
+    <circle class="point" id="point" cx={X(r0.fpr)} cy={Y(r0.tpr)} r="7" />
+  </svg>
+  <div class="axis-label x">Good customers turned away</div>
+
+  <p class="readout" aria-live="polite">
+    At this cutoff we approve <strong class="num" data-k="approved">{pct(r0.approved)}</strong> of applicants,
+    stop <strong class="num bad-text" data-k="tpr">{pct(r0.tpr)}</strong> of eventual defaulters,
+    and turn away <strong class="num" data-k="fpr">{pct(r0.fpr)}</strong> of good customers.
+  </p>
+  <figcaption class="muted">Synthetic portfolio of {applicants.length} applicants. Model AUC {auc.toFixed(2)}. <a href="/writing/roc-curve-as-a-lending-decision/">How to read this</a></figcaption>
+</figure>
+
+<script>
+  const fig = document.querySelector<HTMLElement>('.tc');
+  if (fig) {
+    const apps: { s: number; bad: number }[] = JSON.parse(fig.dataset.applicants!);
+    const nBad = Number(fig.dataset.nbad), nGood = Number(fig.dataset.ngood);
+    const P = 340, pad = 8, S = 400;
+    const X = (v: number) => pad + v * P, Y = (v: number) => pad + P - v * P;
+    const input = fig.querySelector<HTMLInputElement>('#cutoff')!;
+    const out = fig.querySelector<HTMLOutputElement>('#cutoff-value')!;
+    const zone = fig.querySelector<SVGRectElement>('.declined-zone')!;
+    const cut = fig.querySelector<SVGLineElement>('.cut')!;
+    const point = fig.querySelector<SVGCircleElement>('#point')!;
+    const gx = fig.querySelector<SVGLineElement>('#guide-x')!;
+    const gy = fig.querySelector<SVGLineElement>('#guide-y')!;
+    const field = (k: string) => fig.querySelector<HTMLElement>(`[data-k="${k}"]`)!;
+    const pct = (v: number) => `${Math.round(v * 100)}%`;
+
+    const update = () => {
+      const c = Number(input.value);
+      let tp = 0, fp = 0;
+      for (const a of apps) if (a.s >= c) a.bad ? tp++ : fp++;
+      const tpr = tp / nBad, fpr = fp / nGood;
+      out.value = c.toFixed(2);
+      zone.setAttribute('x', String(c * S));
+      zone.setAttribute('width', String((1 - c) * S));
+      cut.setAttribute('x1', String(c * S));
+      cut.setAttribute('x2', String(c * S));
+      point.setAttribute('cx', String(X(fpr)));
+      point.setAttribute('cy', String(Y(tpr)));
+      gx.setAttribute('x1', String(X(fpr))); gx.setAttribute('x2', String(X(fpr))); gx.setAttribute('y2', String(Y(tpr)));
+      gy.setAttribute('x2', String(X(fpr))); gy.setAttribute('y1', String(Y(tpr))); gy.setAttribute('y2', String(Y(tpr)));
+      field('approved').textContent = pct((apps.length - tp - fp) / apps.length);
+      field('tpr').textContent = pct(tpr);
+      field('fpr').textContent = pct(fpr);
+    };
+    input.addEventListener('input', update);
+  }
+</script>
+
+<style>
+  .tc { margin: 0; padding: clamp(18px, 3vw, 28px); background: var(--surface); border: 1px solid var(--rule); border-radius: 18px; }
+  svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .strip { margin-bottom: 14px; }
+  .tick { stroke-width: 1; }
+  .tick.good { stroke: var(--green); opacity: 0.45; }
+  .tick.bad { stroke: var(--red); stroke-width: 1.3; }
+  .declined-zone { fill: var(--red); opacity: 0.1; }
+  .cut { stroke: var(--ink); stroke-width: 2; }
+  .axis-text { font-family: var(--font-display); font-size: 11px; fill: var(--muted); }
+
+  .control { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; margin-bottom: 18px; font-family: var(--font-display); font-size: 0.95rem; }
+  .control output { min-width: 3ch; font-weight: 650; }
+  input[type='range'] { width: 100%; accent-color: var(--ink); min-height: 28px; }
+
+  .plot { max-width: 340px; margin: 0 auto; }
+  .frame { fill: none; stroke: var(--rule); }
+  .grid line { stroke: var(--rule); stroke-width: 0.8; opacity: 0.7; }
+  .chance { stroke: var(--muted); stroke-dasharray: 4 5; opacity: 0.6; }
+  .curve {
+    fill: none; stroke: var(--green); stroke-width: 3; stroke-linejoin: round;
+    stroke-dasharray: 1; stroke-dashoffset: 0;
+    animation: draw 1.4s cubic-bezier(.6, 0, .2, 1) both;
+  }
+  .guide { stroke: var(--ink); stroke-width: 1; stroke-dasharray: 2 4; opacity: 0.55; }
+  .point { fill: var(--red); stroke: var(--surface); stroke-width: 3; animation: pop 0.4s 1.3s ease-out both; }
+  @keyframes draw { from { stroke-dashoffset: 1; } }
+  @keyframes pop { from { opacity: 0; r: 0; } }
+
+  .axis-label { max-width: 356px; margin: 0 auto; font-family: var(--font-display); font-size: 0.8rem; color: var(--muted); }
+  .axis-label.y { margin-bottom: 4px; }
+  .axis-label.x { margin-top: 6px; text-align: right; }
+  .readout { margin: 18px 0 8px; font-size: 1rem; line-height: 1.5; }
+  .readout strong { font-family: var(--font-display); }
+  .bad-text { color: var(--red); }
+  figcaption { font-size: var(--step--1); }
+</style>

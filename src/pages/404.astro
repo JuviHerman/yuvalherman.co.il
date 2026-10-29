@@ -1,0 +1,13 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="Page not found">
+  <div class="wrap nf">
+    <h1>This page isn't here.</h1>
+    <p class="muted">The link may be old or mistyped. Try the <a href="/">home page</a> or the <a href="/writing/">writing</a>.</p>
+  </div>
+</Base>
+
+<style>
+  .nf { padding: clamp(48px, 10vw, 120px) var(--gutter); }
+</style>
