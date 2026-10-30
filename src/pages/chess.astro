@@ -1,0 +1,114 @@
+---
+import Base from '../layouts/Base.astro';
+import ChessDensity from '../components/ChessDensity.astro';
+import ChessTimeline from '../components/ChessTimeline.astro';
+import { current, decision, timeline, rating, user, fetchedAt, ARMS, QUANTILE, pct, type ArmId } from '../chess';
+
+const ids: ArmId[] = ['night', 'day'];
+const updated = new Date(fetchedAt).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Jerusalem' });
+---
+<Base title="Chess" description="A two-armed bandit over my own chess games: Mac at night or phone by day.">
+  <article class="wrap chess">
+    <h1>Mac at night or phone by day?</h1>
+    <p class="lede muted prose">
+      I play rapid chess on a wide screen at night and on my phone during the day. Each setup is an
+      arm in a two-armed bandit, and the data picks my next game.
+    </p>
+
+    <section class="verdict">
+      <div>
+        <p class="k">Next game</p>
+        <p class={`v ${decision.explore}`}>{ARMS[decision.explore].label}</p>
+        <p class="muted">Highest {Math.round(QUANTILE * 100)}th percentile (UCB)</p>
+      </div>
+      <div>
+        <p class="k">Better on the estimate</p>
+        <p class={`v ${decision.exploit}`}>{ARMS[decision.exploit].label}</p>
+        <p class="muted">Highest posterior mean</p>
+      </div>
+      <p class="agree">
+        {decision.agree
+          ? 'Both rules agree, so the next game exploits.'
+          : `The rules disagree. The estimate favours ${ARMS[decision.exploit].label}, but I'll follow UCB and explore ${ARMS[decision.explore].label}.`}
+      </p>
+    </section>
+
+    <section class="block">
+      <h2>Where each setup's win rate probably sits</h2>
+      <ul class="legend">
+        {ids.map((id) => (
+          <li class={id}>
+            <span class="swatch" aria-hidden="true"></span>
+            <strong>{ARMS[id].label}</strong>
+            <span class="muted">{ARMS[id].hours}</span>
+          </li>
+        ))}
+        <li class="key muted">Dot: estimate. Dashed line: {Math.round(QUANTILE * 100)}th percentile.</li>
+      </ul>
+      <ChessDensity />
+      <table>
+        <thead><tr><th>Setup</th><th>Games</th><th>W–L–D</th><th>Estimate</th><th>{Math.round(QUANTILE * 100)}th pct</th></tr></thead>
+        <tbody>
+          {ids.map((id) => (
+            <tr class={id}>
+              <th scope="row"><span class="swatch" aria-hidden="true"></span>{ARMS[id].label}</th>
+              <td class="num">{current[id].n}</td>
+              <td class="num">{current[id].wins}–{current[id].losses}–{current[id].draws}</td>
+              <td class="num">{pct(current[id].mean)}</td>
+              <td class="num">{pct(current[id].ucb)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </section>
+
+    <section class="block">
+      <h2>How the picture changed</h2>
+      <p class="muted">Solid: estimate. Dashed: {Math.round(QUANTILE * 100)}th percentile. {timeline.length} days of play so far.</p>
+      <ChessTimeline />
+    </section>
+
+    <section class="block method prose">
+      <h2>Method</h2>
+      <p>
+        Every rated game on chess.com (<a href={`https://www.chess.com/member/${user}`}>{user}</a>) is assigned to
+        an arm by the hour it ended in Israel time: 21:00 to 06:00 is the Mac, the rest is the phone.
+        Each arm's win rate gets a Beta posterior from a uniform prior, with draws counted as half a win.
+      </p>
+      <p>
+        The next game goes to the arm with the higher {Math.round(QUANTILE * 100)}th percentile (Bayes-UCB):
+        an arm with few games has a wide distribution, so its upside earns it more play until the data settles.
+        The data refreshes daily.
+      </p>
+      <p class="muted">{rating && <>Current rapid rating <span class="num">{rating}</span>. </>}Last updated {updated}.</p>
+    </section>
+  </article>
+</Base>
+
+<style>
+  .chess { padding-top: clamp(24px, 5vw, 56px); padding-bottom: 72px; max-width: 880px; }
+  .lede { font-size: 1.2rem; }
+  .night { --c: var(--night); }
+  .day { --c: var(--day); }
+
+  .verdict { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 32px; margin: 36px 0 48px; padding: 24px; background: var(--surface); border: 1px solid var(--rule); border-radius: 16px; }
+  .verdict p { margin: 0; }
+  .k { font: 500 0.9rem var(--font-display); color: var(--muted); }
+  .v { font: 750 clamp(1.5rem, 3.4vw, 2.1rem)/1.15 var(--font-display); letter-spacing: -0.02em; color: var(--c); margin: 4px 0 !important; }
+  .verdict .muted { font-size: 0.9rem; }
+  .agree { grid-column: 1 / -1; padding-top: 16px; border-top: 1px solid var(--rule); }
+  @media (max-width: 600px) { .verdict { grid-template-columns: 1fr; } }
+
+  .block { padding: 36px 0; border-top: 1px solid var(--rule); }
+  .block h2 { font-size: var(--step-1); }
+  .legend { list-style: none; display: flex; flex-wrap: wrap; gap: 8px 24px; margin: 0 0 18px; padding: 0; font-family: var(--font-display); font-size: 0.95rem; }
+  .legend li { display: flex; align-items: center; gap: 8px; }
+  .swatch { display: inline-block; width: 12px; height: 12px; border-radius: 3px; background: var(--c); margin-right: 8px; }
+  .legend .swatch { margin: 0; }
+
+  table { width: 100%; border-collapse: collapse; margin-top: 24px; font-family: var(--font-display); font-size: 0.95rem; }
+  th, td { text-align: right; padding: 8px 10px; border-bottom: 1px solid var(--rule); }
+  th:first-child { text-align: left; font-weight: 600; }
+  thead th { color: var(--muted); font-weight: 500; }
+  @media (max-width: 520px) { th, td { padding: 8px 4px; font-size: 0.85rem; } }
+</style>

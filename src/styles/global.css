@@ -9,6 +9,8 @@
   --green: #17704f;
   --red: #b0323f;
   --focus: #2f5fd0;
+  --night: #4453c9;
+  --day: #b06f0c;
 
   --font-display: 'Bricolage Grotesque', 'Helvetica Neue', Arial, sans-serif;
   --font-body: 'Source Serif 4', Georgia, 'Times New Roman', serif;
@@ -37,6 +39,8 @@
     --green: #52c79c;
     --red: #ef7c87;
     --focus: #8fb0ff;
+    --night: #9aa5ff;
+    --day: #f0b450;
     color-scheme: dark;
   }
 }
@@ -49,6 +53,8 @@
   --green: #52c79c;
   --red: #ef7c87;
   --focus: #8fb0ff;
+  --night: #9aa5ff;
+  --day: #f0b450;
   color-scheme: dark;
 }
 

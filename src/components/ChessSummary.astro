@@ -1,0 +1,49 @@
+---
+import ChessDensity from './ChessDensity.astro';
+import { current, decision, rating, fetchedAt, ARMS, pct, type ArmId } from '../chess';
+
+const ids: ArmId[] = ['night', 'day'];
+const next = ARMS[decision.explore];
+const updated = new Date(fetchedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'Asia/Jerusalem' });
+---
+<div class="summary">
+  <p class="next-label">Next game</p>
+  <p class={`next ${decision.explore}`}>{next.label}</p>
+  <p class="why muted">
+    {decision.agree
+      ? 'Ahead on both the estimate and the upside.'
+      : `Exploring: its upside is higher, though ${ARMS[decision.exploit].label} leads on the estimate.`}
+  </p>
+  <ChessDensity compact />
+  <ul class="legend">
+    {ids.map((id) => (
+      <li class={id}>
+        <span class="swatch" aria-hidden="true"></span>
+        <span class="name">{ARMS[id].short}</span>
+        <span class="num">{current[id].wins}–{current[id].losses}{current[id].draws ? `–${current[id].draws}` : ''}</span>
+        <span class="num muted">{pct(current[id].mean)} / {pct(current[id].ucb)}</span>
+      </li>
+    ))}
+  </ul>
+  <p class="foot muted">
+    Win rate: estimate / 90th percentile.{rating && <> Rapid rating <span class="num">{rating}</span>.</>} Updated {updated}.
+  </p>
+  <a class="more" href="/chess/">See the analysis</a>
+</div>
+
+<style>
+  .summary p { margin: 0; }
+  .next-label { font: 500 0.85rem var(--font-display); color: var(--muted); }
+  .next { font: 750 1.5rem/1.15 var(--font-display); letter-spacing: -0.02em; margin: 2px 0 6px !important; }
+  .next.night { color: var(--night); }
+  .next.day { color: var(--day); }
+  .why { font-size: 0.88rem; line-height: 1.4; margin-bottom: 14px !important; }
+  .legend { list-style: none; margin: 10px 0 8px; padding: 0; font-family: var(--font-display); font-size: 0.9rem; }
+  .legend li { display: grid; grid-template-columns: 12px 4.2em auto 1fr; align-items: center; gap: 8px; padding: 3px 0; }
+  .legend .muted { text-align: right; }
+  .swatch { width: 12px; height: 12px; border-radius: 3px; background: var(--c); }
+  .night { --c: var(--night); }
+  .day { --c: var(--day); }
+  .foot { font-size: 0.8rem; line-height: 1.4; margin-bottom: 10px !important; }
+  .more { font: 600 0.95rem var(--font-display); }
+</style>

@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import { profile } from '../data';
+import ChessRail from '../components/ChessRail.astro';
 
 interface Props {
   title?: string;
@@ -14,6 +15,7 @@ const path = Astro.url.pathname;
 const nav = [
   { href: '/writing/', label: 'Writing' },
   { href: '/about/', label: 'About' },
+  { href: '/chess/', label: 'Chess' },
   { href: '/cv/', label: 'CV' },
 ];
 ---
@@ -75,6 +77,7 @@ const nav = [
         <p class="muted">Tel Aviv. Built with Astro, hosted on GitHub Pages.</p>
       </div>
     </footer>
+    <ChessRail />
   </body>
 </html>
 
