@@ -54,13 +54,13 @@
     <ellipse cx="237" cy="199" rx="13" ry="8" fill="#f2a9a6" opacity="0.55" filter="url(#soft)" />
 
     <!-- Beard and mustache: auburn wash with scribbles -->
-    <path d="M141 172 C139 238 166 286 200 288 C234 286 261 238 259 172 L255 180 C254 204 246 218 234 226 C224 230 212 226 200 228 C188 226 176 230 166 226 C154 218 146 204 145 180 Z"
-          fill="#b8693c" opacity="0.92" filter="url(#wash)" />
+    <path d="M143 190 C143 240 168 279 200 281 C232 279 257 240 257 190 L253 198 C251 218 243 230 232 237 C222 241 212 237 200 239 C188 237 178 241 168 237 C157 230 149 218 147 198 Z"
+          fill="#b8693c" opacity="0.78" filter="url(#wash)" />
     <g fill="none" stroke="#7a3f1f" stroke-width="1.6" stroke-linecap="round" opacity="0.75" filter="url(#wobble)">
-      <path d="M150 220 c4 8 2 14 6 20 M160 236 c3 7 1 12 5 18 M172 250 c2 6 1 11 4 16 M186 262 c2 5 0 9 3 13 M200 266 c0 5 0 9 1 13 M214 262 c-2 5 0 9 -3 13 M228 250 c-2 6 -1 11 -4 16 M240 236 c-3 7 -1 12 -5 18 M250 220 c-4 8 -2 14 -6 20" />
+      <path d="M160 238 c3 6 1 10 5 15 M172 250 c2 5 1 9 4 13 M186 260 c2 4 0 8 3 11 M200 263 c0 4 0 8 1 11 M214 260 c-2 4 0 8 -3 11 M228 250 c-2 5 -1 9 -4 13 M240 238 c-3 6 -1 10 -5 15" />
       <path d="M182 234 c6 -4 12 -5 18 -3 M218 234 c-6 -4 -12 -5 -18 -3" />
     </g>
-    <path d="M141 172 C139 238 166 286 200 288 C234 286 261 238 259 172" fill="none" stroke="#1b1b1b" stroke-width="2.4" opacity="0.8" filter="url(#wobble)" />
+    <path d="M143 190 C143 240 168 279 200 281 C232 279 257 240 257 190" fill="none" stroke="#1b1b1b" stroke-width="2.2" opacity="0.6" filter="url(#wobble)" />
 
     <!-- Mouth: small open smile -->
     <path d="M188 241 Q200 257 212 241 Q200 245 188 241 Z" fill="#fff" stroke="#1b1b1b" stroke-width="2.6" stroke-linejoin="round" filter="url(#wobble)" />
@@ -73,9 +73,18 @@
     <ellipse cx="222" cy="180" rx="5.2" ry="7.2" fill="#1b1b1b" />
     <circle cx="179.8" cy="177.4" r="1.6" fill="#fff" />
     <circle cx="223.8" cy="177.4" r="1.6" fill="#fff" />
+    <!-- Glasses -->
+    <g fill="none" stroke-linecap="round" stroke-linejoin="round" filter="url(#wobble)">
+      <rect x="159" y="165" width="37" height="29" rx="8" fill="#ffffff" fill-opacity="0.15" stroke="#1b1b1b" stroke-width="3.4" />
+      <rect x="204" y="165" width="37" height="29" rx="8" fill="#ffffff" fill-opacity="0.15" stroke="#1b1b1b" stroke-width="3.4" />
+      <rect x="162" y="168" width="31" height="23" rx="6" stroke="#9a5f36" stroke-width="1.4" stroke-dasharray="6 5" opacity="0.8" />
+      <rect x="207" y="168" width="31" height="23" rx="6" stroke="#9a5f36" stroke-width="1.4" stroke-dasharray="6 5" opacity="0.8" />
+      <path d="M196 177 Q200 172 204 177" stroke="#1b1b1b" stroke-width="2.8" />
+      <path d="M159 173 L142 171 M241 173 L258 171" stroke="#1b1b1b" stroke-width="2.8" />
+    </g>
     <g fill="none" stroke="#7a4a2e" stroke-width="3.4" stroke-linecap="round" filter="url(#wobble)">
-      <path d="M165 164 Q177 158 189 163" />
-      <path d="M211 163 Q223 158 235 164" />
+      <path d="M165 157 Q177 151 189 156" />
+      <path d="M211 156 Q223 151 235 157" />
     </g>
 
     <!-- Hair: short and tousled, brown with grey shading -->
