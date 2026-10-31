@@ -11,6 +11,7 @@ const posts = (await getPosts()).slice(0, 3);
 <Base>
   <section class="hero wrap">
     <div class="persona">
+      <img class="portrait" src="/portrait.svg" alt="Illustrated portrait of Yuval Herman" width="168" height="168" />
       <h1>Yuval<br />Herman</h1>
       <p class="role">{profile.role}, {profile.location}</p>
       <p class="lede">Machine learning for lending. Formerly a CPA.</p>
@@ -88,6 +89,7 @@ const posts = (await getPosts()).slice(0, 3);
   }
   @media (max-width: 860px) { .hero { grid-template-columns: minmax(0, 1fr); align-items: start; } }
 
+  .portrait { display: block; width: clamp(120px, 16vw, 168px); height: auto; margin: 0 0 20px -6px; }
   h1 { font-size: clamp(3.6rem, 11vw, 8.5rem); line-height: 0.9; letter-spacing: -0.045em; font-weight: 800; margin-bottom: 0.3em; }
   .role { font-family: var(--font-display); font-weight: 600; font-size: var(--step-1); color: var(--green); margin-bottom: 6px; }
   .lede { font-size: 1.25rem; color: var(--muted); }
