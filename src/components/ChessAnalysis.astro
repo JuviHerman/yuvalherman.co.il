@@ -1,7 +1,7 @@
 ---
 import ChessDensity from '../components/ChessDensity.astro';
-import ChessTimeline from '../components/ChessTimeline.astro';
-import { current, decision, timeline, rating, user, fetchedAt, simulatedGames, liveFrom, ARMS, QUANTILE, pct, type ArmId } from '../chess';
+import ChessMonitor from '../components/ChessMonitor.astro';
+import { current, decision, declared, fetchedAt, ARMS, QUANTILE, DRAWS, DECIDE_AT, pct, type ArmId } from '../chess';
 
 const ids: ArmId[] = ['night', 'day'];
 const updated = new Date(fetchedAt).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Jerusalem' });
@@ -44,7 +44,8 @@ const embedded = level === 3;
     </section>
 
     <section class="block">
-      <Sub>Where each setup's win rate probably sits</Sub>
+      <Sub>Beta distributions of the two game types</Sub>
+      <p class="muted">Each curve is the Beta posterior of that setup's win rate: where it probably sits, and how sure I am.</p>
       <ul class="legend">
         {ids.map((id) => (
           <li class={id}>
@@ -73,31 +74,21 @@ const embedded = level === 3;
     </section>
 
     <section class="block">
-      <Sub>How the picture changed</Sub>
-      <p class="muted">Solid: estimate. Dashed: {Math.round(QUANTILE * 100)}th percentile. {timeline.length} days of play so far.</p>
-      <ChessTimeline />
+      <Sub>Which setup is better?</Sub>
+      <p class="muted">
+        Every day, {DRAWS.toLocaleString('en-US')} draws from both distributions: each line is the share of rounds that setup's win rate came out higher.
+        I declare a winner when one reaches {Math.round(DECIDE_AT * 100)}%{declared && ', and keep playing both after (dashed)'}.
+      </p>
+      <ChessMonitor />
     </section>
 
     <section class="block method prose">
       <Sub>Method</Sub>
       <p>
-        Every rated game on chess.com (<a href={`https://www.chess.com/member/${user}`}>{user}</a>) is assigned to
-        an arm by the hour it ended in Israel time: 21:00 to 06:00 is the Mac, the rest is the phone.
-        Each arm's win rate gets a Beta posterior from a uniform prior, with draws counted as half a win.
+        Games are split by the hour they ended: 21:00–06:00 on the Mac, the rest on the phone. Each win rate is a Beta posterior
+        (uniform prior, draws count half), and the next game goes to the higher {Math.round(QUANTILE * 100)}th percentile (Bayes-UCB).
       </p>
-      {simulatedGames > 0 && liveFrom && (
-        <p>
-          The games before {new Date(`${liveFrom}T12:00:00Z`).toLocaleDateString('en-GB', { day: 'numeric', month: 'long' })} are
-          a simulated warm-up history (<span class="num">{simulatedGames}</span> games) that seeds the posteriors;
-          every live game from chess.com is added on top.
-        </p>
-      )}
-      <p>
-        The next game goes to the arm with the higher {Math.round(QUANTILE * 100)}th percentile (Bayes-UCB):
-        an arm with few games has a wide distribution, so its upside earns it more play until the data settles.
-        The data refreshes daily.
-      </p>
-      <p class="muted">{rating && <>Current chess.com rapid rating <span class="num">{rating}</span>. </>}Last updated {updated}.</p>
+      <p class="muted">Updated daily. Last update {updated}.</p>
     </section>
 </div>
 

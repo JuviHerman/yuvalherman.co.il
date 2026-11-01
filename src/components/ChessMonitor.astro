@@ -1,0 +1,54 @@
+---
+// Daily probability that each setup is the better one (Monte Carlo over the Beta posteriors),
+// with the 95% decision line. After the official call the lines continue dashed.
+import { timeline, declared, DECIDE_AT, ARMS, type ArmId } from '../chess';
+
+const W = 640, top = 14, plotH = 220, H = top + plotH + 30;
+const n = timeline.length;
+const X = (i: number) => (n === 1 ? W / 2 : 30 + (i * (W - 48)) / (n - 1));
+const Y = (v: number) => top + plotH * (1 - v);
+const ids: ArmId[] = ['night', 'day'];
+const path = (id: ArmId, from: number, to: number) =>
+  timeline.slice(from, to + 1).map((d, j) => `${j ? 'L' : 'M'}${X(from + j).toFixed(1)} ${Y(d.best[id]).toFixed(1)}`).join(' ');
+const split = declared ? declared.index : n - 1;
+const fmt = (d: string) => new Date(`${d}T12:00:00Z`).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+const labelEvery = Math.max(1, Math.ceil(n / 6));
+---
+<svg class="monitor" viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`Probability that each setup is the better one, per day.${declared ? ` ${ARMS[declared.arm].label} crossed ${Math.round(DECIDE_AT * 100)}% on ${fmt(declared.date)}.` : ''}`}>
+  {[0, 0.25, 0.5, 0.75, 1].map((g) => (
+    <g><line class="grid" x1="30" x2={W} y1={Y(g)} y2={Y(g)} /><text class="tick" x="0" y={Y(g) + 4}>{g.toFixed(2).replace(/\.?0+$/, '') || '0'}</text></g>
+  ))}
+  <line class="threshold" x1="30" x2={W} y1={Y(DECIDE_AT)} y2={Y(DECIDE_AT)} />
+  <text class="tick strong" x="34" y={Y(DECIDE_AT) - 5}>{Math.round(DECIDE_AT * 100)}%: declare a winner</text>
+  {declared && (
+    <g class={declared.arm}>
+      <line class="decided" x1={X(declared.index)} x2={X(declared.index)} y1={top} y2={top + plotH} />
+      <text class="tick call" x={X(declared.index) + (declared.index > n * 0.7 ? -6 : 6)} y={Y(0.5) + 4} text-anchor={declared.index > n * 0.7 ? 'end' : 'start'}>
+        Declared {fmt(declared.date)}: {ARMS[declared.arm].label}
+      </text>
+    </g>
+  )}
+  {ids.map((id) => (
+    <g class={id}>
+      <path class="line" d={path(id, 0, split)} />
+      {declared && split < n - 1 && <path class="line after" d={path(id, split, n - 1)} />}
+    </g>
+  ))}
+  {timeline.map((d, i) => (i % labelEvery === 0 || i === n - 1) && (
+    <text class="tick" x={X(i)} y={H - 6} text-anchor="middle">{fmt(d.date)}</text>
+  ))}
+</svg>
+
+<style>
+  .monitor { display: block; width: 100%; height: auto; overflow: visible; }
+  .grid { stroke: var(--rule); stroke-width: 0.8; }
+  .tick { font-family: var(--font-display); font-size: 12px; fill: var(--muted); }
+  .night { --c: var(--night); }
+  .day { --c: var(--day); }
+  .line { fill: none; stroke: var(--c); stroke-width: 2.4; stroke-linejoin: round; }
+  .after { stroke-dasharray: 5 4; stroke-width: 2; }
+  .threshold { stroke: var(--ink); stroke-width: 1; stroke-dasharray: 2 4; opacity: 0.6; }
+  .strong { fill: var(--ink); }
+  .decided { stroke: var(--c); stroke-width: 1.5; }
+  .call { fill: var(--c); font-weight: 600; paint-order: stroke; stroke: var(--halo, var(--paper)); stroke-width: 5px; stroke-linejoin: round; }
+</style>

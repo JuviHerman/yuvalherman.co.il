@@ -108,8 +108,6 @@ const merged = [
 ].sort((a, b) => a.t - b.t);
 
 export const games = merged.map((g) => ({ ...g, ...parts(g.t), arm: armOf(parts(g.t).hour) }));
-export const simulatedGames = games.filter((g) => g.sim).length;
-export const liveFrom = games.find((g) => !g.sim)?.date ?? null;
 
 const byArm = (list: typeof games) => ({
   night: posterior(list.filter((g) => g.arm === 'night').map((g) => g.s)),
@@ -122,11 +120,61 @@ export const rating = games.at(-1)?.r ?? null;
 export const fetchedAt = snapshot.fetchedAt;
 export const user = snapshot.user;
 
+// ---- Probability of being best, by Monte Carlo ----
+
+function mulberry32(seed: number) {
+  return () => {
+    seed |= 0; seed = (seed + 0x6d2b79f5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+// Marsaglia-Tsang gamma sampler (shape >= 1, which every posterior here is).
+function gamma(k: number, rand: () => number) {
+  const d = k - 1 / 3, c = 1 / Math.sqrt(9 * d);
+  for (;;) {
+    let x: number, v: number;
+    do {
+      x = Math.sqrt(-2 * Math.log(1 - rand())) * Math.cos(2 * Math.PI * rand());
+      v = 1 + c * x;
+    } while (v <= 0);
+    v = v * v * v;
+    const u = rand();
+    if (Math.log(u) < 0.5 * x * x + d - d * v + d * Math.log(v)) return d * v;
+  }
+}
+const betaDraw = (a: number, b: number, rand: () => number) => {
+  const x = gamma(a, rand);
+  return x / (x + gamma(b, rand));
+};
+
+export const DRAWS = 1000;
+export const DECIDE_AT = 0.95;
+
+// Share of DRAWS rounds in which the Mac's sampled win rate beats the phone's.
+function probNightBest(p: Record<ArmId, Posterior>, seed: number) {
+  const rand = mulberry32(seed);
+  let wins = 0;
+  for (let i = 0; i < DRAWS; i++) if (betaDraw(p.night.a, p.night.b, rand) > betaDraw(p.day.a, p.day.b, rand)) wins++;
+  return wins / DRAWS;
+}
+
 // Posterior state at the end of each day that had games.
-export const timeline = [...new Set(games.map((g) => g.date))].map((date) => {
+export const timeline = [...new Set(games.map((g) => g.date))].map((date, i) => {
   const p = byArm(games.filter((g) => g.date <= date));
-  return { date, ...p, decision: decide(p) };
+  const night = probNightBest(p, 1000 + i);
+  return { date, ...p, decision: decide(p), best: { night, day: 1 - night } };
 });
+
+// The first day either setup reached DECIDE_AT: the official call. Play continues on both.
+export const declared = (() => {
+  const i = timeline.findIndex((d) => Math.max(d.best.night, d.best.day) >= DECIDE_AT);
+  if (i < 0) return null;
+  const d = timeline[i];
+  return { index: i, date: d.date, arm: (d.best.night >= d.best.day ? 'night' : 'day') as ArmId };
+})();
 
 // Sampled density curve for plotting, as [x, y] pairs on a 0..1 grid.
 export const densityPoints = (a: number, b: number, steps = 200) =>
