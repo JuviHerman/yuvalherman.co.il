@@ -145,9 +145,11 @@ const verbs = (text: string) => text.split(/\*(.+?)\*/);
   a.more:hover { text-decoration: underline; text-underline-offset: 0.3em; }
 
   .expandable { padding: 0; }
-  .expandable:has(details[open]) { grid-column: 1 / -1; transform: none; }
-  .experiment summary { display: flex; flex-direction: column; gap: 8px; padding: 22px 22px 20px; cursor: pointer; list-style: none; height: 100%; }
-  .experiment { height: 100%; }
+  .expandable:has(details[open]) { grid-column: 1 / -1; }
+  .expandable:has(details[open]):hover { transform: none; box-shadow: none; }
+  .experiment summary { display: flex; flex-direction: column; gap: 8px; padding: 22px 22px 20px; cursor: pointer; list-style: none; }
+  /* Closed, the card fills its grid row like the others; open, it sizes to its content. */
+  .experiment:not([open]), .experiment:not([open]) summary { height: 100%; }
   .experiment summary::-webkit-details-marker { display: none; }
   .experiment .more::after { content: ' +'; }
   .experiment[open] .more::after { content: ' −'; }
