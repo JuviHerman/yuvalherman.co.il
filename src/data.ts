@@ -118,134 +118,59 @@ export const education = [
 
 export const languages = ['Hebrew (native)', 'English (native)'];
 
-// Skill map for the home page, grouped by the question each skill answers. Projects are
-// deliberately terse: what was done and what it moved, not how.
-export type Case = { code: string; what: string; result?: string; stack?: string[]; href?: string; expand?: 'chess' };
-export type SubSkill = { name: string; cases?: Case[]; items?: string[] };
-export type SkillArea = { id: string; name: string; tagline: string; subs: SubSkill[] };
+// Skill map for the home page: a few broad areas, each a grid of project cards.
+// Projects are deliberately terse. Wrap the action verbs in *asterisks* to highlight them.
+export type Case = { code: string; skill: string; what: string; result?: string; stack?: string[]; href?: string; linkLabel?: string; expand?: 'chess' };
+export type SkillArea = { id: string; name: string; tagline: string; cases: Case[]; also?: { name: string; items: string[] }[] };
 
 export const skillAreas: SkillArea[] = [
   {
     id: 'predict',
-    name: 'Predict',
-    tagline: 'What will happen next?',
-    subs: [
-      {
-        name: 'Time series',
-        cases: [
-          { code: 'Forward Look', what: 'Forecasts for Finance, built on trend and seasonality.', stack: ['Prophet'] },
-        ],
-      },
-      {
-        name: 'Regression',
-        cases: [
-          { code: 'Revaluation', what: 'Bond-risk research combining yield curves, convex optimization and machine learning.', stack: ['Convex optimization', 'Fixed income'], href: 'https://github.com/JuviHerman/Revaluations' },
-        ],
-      },
-    ],
-  },
-  {
-    id: 'detect',
-    name: 'Detect',
-    tagline: 'What is risky, or quietly wrong?',
-    subs: [
-      {
-        name: 'Fraud',
-        cases: [
-          { code: 'Quiet Signals', what: 'Fraud-detection rules for a lending population.', result: 'Fraud down 2.5%' },
-        ],
-      },
-      {
-        name: 'Graph signals',
-        cases: [
-          { code: 'Network Effects', what: 'Behavioral and graph-based features that surface risk hiding in connections.', stack: ['Graph features', 'GNNs', 'Neptune'] },
-        ],
-      },
-    ],
-  },
-  {
-    id: 'rank',
-    name: 'Rank',
-    tagline: 'What comes first?',
-    subs: [
-      {
-        name: 'Risk scoring',
-        cases: [
-          { code: 'Three Markets', what: 'Credit-risk scores that order applicants from safest to riskiest in three countries, owned from the first feature to production monitoring.', result: '+0.07 ROC-AUC over baseline', stack: ['LightGBM', 'SHAP', 'Optuna'] },
-        ],
-      },
-      {
-        name: 'Prioritization',
-        cases: [
-          { code: 'Stack Order', what: 'Ranks where each container goes in port storage, so the urgent ones, like food, never wait under six others for the lift.', stack: ['Ranking', 'Logistics'] },
-        ],
-      },
+    name: 'Predict & detect',
+    tagline: 'Models that score, flag and forecast.',
+    cases: [
+      { code: 'Three Markets', skill: 'Credit risk', what: '*Scored* credit risk for lending in three countries, *owned* from the first feature to production monitoring.', result: '+0.07 ROC-AUC over baseline', stack: ['LightGBM', 'SHAP', 'Optuna'] },
+      { code: 'Quiet Signals', skill: 'Fraud', what: '*Detected* fraud in a lending population with rules that *catch* what the models missed.', result: 'Fraud down 2.5%', stack: ['Rules', 'Imbalanced data'] },
+      { code: 'Network Effects', skill: 'Graph features', what: '*Engineered* behavioral and graph features that *surface* risk hiding in connections.', stack: ['GNNs', 'Neptune', 'Gremlin'] },
+      { code: 'Forward Look', skill: 'Time series', what: '*Forecast* the numbers Finance plans on, from trend and seasonality.', stack: ['Prophet'] },
+      { code: 'Revaluation', skill: 'Regression', what: '*Priced* bond risk with yield curves, convex optimization and machine learning.', stack: ['Convex optimization', 'Fixed income'], href: 'https://github.com/JuviHerman/Revaluations', linkLabel: 'Code' },
     ],
   },
   {
     id: 'decide',
-    name: 'Decide',
+    name: 'Decide & optimize',
     tagline: 'Which treatment to provide, and which action pays off?',
-    subs: [
-      {
-        name: 'Uplift modeling',
-        cases: [
-          { code: 'Self Cure', what: 'In collections, finding the customers who will repay on their own, so they come out of the at-risk group and treatment goes where it changes the outcome.', stack: ['Uplift models', 'Causal inference'] },
-        ],
-      },
-      {
-        name: 'Optimization',
-        cases: [
-          { code: 'Berth Call', what: 'Which container ship enters the port to unload next: $80K a day waiting at anchor against $3K a day of lift work, with food cleared first and pickup timing modeled in.', result: 'Lowest net cost across decision points', stack: ['Decision modeling', 'Cost optimization'] },
-        ],
-      },
-      {
-        name: 'Thresholds',
-        cases: [
-          { code: 'The Cutoff', what: 'Put a price on every cell of the confusion matrix, then slide the threshold to the most profitable point. Try it below.', stack: ['Confusion matrix', 'Net profit'], href: '/#lab' },
-        ],
-      },
-      {
-        name: 'Sampling',
-        cases: [
-          { code: 'Chess Arm Bandits', what: 'A live two-armed bandit over my own chess games: Mac at night or phone by day. Bayes-UCB picks the next game; the data refreshes daily.', stack: ['Beta posteriors', 'Bayes-UCB', 'chess.com API'], expand: 'chess' },
-        ],
-        items: ['Random sampling', 'Reservoir sampling', 'Importance sampling', 'Multi-armed bandits'],
-      },
+    cases: [
+      { code: 'Self Cure', skill: 'Uplift modeling', what: '*Separated* collections customers who repay on their own from those who need a nudge, so treatment *goes* where it changes the outcome.', stack: ['Uplift models', 'Causal inference'] },
+      { code: 'Berth Call', skill: 'Optimization', what: '*Chose* which container ship enters port next: $80K a day at anchor against $3K a day of lift work, with food *cleared* first and pickups *timed*.', result: 'Lowest net cost across decision points', stack: ['Decision modeling', 'Cost optimization'] },
+      { code: 'Stack Order', skill: 'Ranking', what: '*Ranked* where each container goes in port storage, so urgent ones like food never *wait* under six others for the lift.', stack: ['Ranking', 'Logistics'] },
+      { code: 'The Cutoff', skill: 'Thresholds', what: '*Price* every cell of a confusion matrix, then *slide* to the most profitable threshold.', stack: ['Confusion matrix', 'Net profit'], href: '/#lab', linkLabel: 'Try it' },
+      { code: 'Chess Arm Bandits', skill: 'Sampling', what: 'A live two-armed bandit that *picks* my next chess game, Mac at night or phone by day, and *refreshes* daily.', stack: ['Beta posteriors', 'Bayes-UCB', 'chess.com API'], expand: 'chess' },
+    ],
+    also: [
+      { name: 'Sampling', items: ['Random sampling', 'Reservoir sampling', 'Importance sampling', 'Multi-armed bandits'] },
       { name: 'Experimentation', items: ['A/B testing', 'Causal inference', 'Imbalanced data'] },
     ],
   },
   {
-    id: 'evaluate',
-    name: 'Evaluate',
-    tagline: 'Which model can we trust?',
-    subs: [
-      {
-        name: 'LLM evaluations',
-        cases: [
-          { code: 'Seven Readers', what: 'Seven LLMs from the leading AI labs, including Meta, Amazon, Google and Anthropic, put head to head on parsing financial documents, scored with metrics designed for the task.', result: 'Accuracy, price and latency compared', stack: ['Evaluation design', 'Document parsing'] },
-        ],
-      },
+    id: 'build',
+    name: 'Evaluate & build',
+    tagline: 'Which model can we trust, and does it run for real?',
+    cases: [
+      { code: 'Seven Readers', skill: 'LLM evaluation', what: '*Benchmarked* seven LLMs from Meta, Amazon, Google, Anthropic and others on parsing financial documents, with metrics *designed* for the task.', result: 'Accuracy, price and latency compared', stack: ['Evaluation design', 'Document parsing'] },
+      { code: 'Autopilot', skill: 'Agentic workflows', what: '*Built* agents that train models, validate features and parse documents, with a human *signing off* at the checkpoints.', stack: ['Agent skills', 'MCP', 'AWS Bedrock'] },
+      { code: 'The Global Min', skill: 'App', what: '*Shipped* an iOS interview-prep app with 900+ adaptive questions across nine topics, *written* with an LLM content pipeline.', result: 'On the App Store', stack: ['SwiftUI', 'LLM pipeline'], href: 'https://theglobalmin.app', linkLabel: 'Visit' },
+    ],
+    also: [
       { name: 'Model checks', items: ['Explainability', 'SHAP', 'Drift monitoring', 'Feature-accuracy validation'] },
     ],
   },
   {
-    id: 'build',
-    name: 'Build',
-    tagline: 'Does it run for real?',
-    subs: [
-      {
-        name: 'Agentic workflows',
-        cases: [
-          { code: 'Autopilot', what: 'Agents that train models, validate feature accuracy and parse documents, with a human signing off at the checkpoints.', stack: ['Agent skills', 'MCP', 'AWS Bedrock'] },
-        ],
-      },
-      {
-        name: 'Apps',
-        cases: [
-          { code: 'The Global Min', what: 'A data-science interview-prep app with 900+ adaptive scenario questions across nine topics, written with an LLM content pipeline and automated quality checks.', result: 'On the App Store', stack: ['SwiftUI', 'LLM content pipeline'], href: 'https://theglobalmin.app' },
-        ],
-      },
+    id: 'tools',
+    name: 'Toolkit',
+    tagline: 'What I reach for every day.',
+    cases: [],
+    also: [
       { name: 'Languages', items: ['Python', 'SQL', 'Gremlin'] },
       { name: 'Building with AI', items: ['Claude Code', 'MCP', 'AWS Bedrock', 'OpenAI', 'RAG'] },
       { name: 'Modeling', items: ['LightGBM', 'XGBoost', 'CatBoost', 'scikit-learn', 'PyTorch Geometric', 'Prophet', 'Optuna'] },
