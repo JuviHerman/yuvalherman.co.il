@@ -7,17 +7,23 @@ const ids: ArmId[] = ['night', 'day'];
 const updated = new Date(fetchedAt).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Jerusalem' });
 
 // Rendered both as the /chess page (level 1) and as a home-page section (level 2).
-interface Props { level?: 1 | 2 }
+// Level 3 is the embedded view inside the Projects card: no title or intro.
+interface Props { level?: 1 | 2 | 3 }
 const { level = 1 } = Astro.props;
 const Title = level === 1 ? 'h1' : 'h2';
-const Sub = level === 1 ? 'h2' : 'h3';
+const Sub = (['h2', 'h3', 'h5'] as const)[level - 1];
+const embedded = level === 3;
 ---
 <div class="chess-analysis">
-    <Title class="title">Mac at night or phone by day?</Title>
-    <p class="lede muted prose">
-      I play rapid chess on a wide screen at night and on my phone during the day. Each setup is an
-      arm in a two-armed bandit, and the data picks my next game.
-    </p>
+    {!embedded && (
+      <>
+        <Title class="title">Mac at night or phone by day?</Title>
+        <p class="lede muted prose">
+          I play rapid chess on a wide screen at night and on my phone during the day. Each setup is an
+          arm in a two-armed bandit, and the data picks my next game.
+        </p>
+      </>
+    )}
 
     <section class="verdict">
       <div>
@@ -102,7 +108,7 @@ const Sub = level === 1 ? 'h2' : 'h3';
   @media (max-width: 600px) { .verdict { grid-template-columns: 1fr; } }
 
   .block { padding: 36px 0; border-top: 1px solid var(--rule); }
-  .block :is(h2, h3) { font-size: var(--step-1); }
+  .block :is(h2, h3, h5) { font-size: var(--step-1); }
   .legend { list-style: none; display: flex; flex-wrap: wrap; gap: 8px 24px; margin: 0 0 18px; padding: 0; font-family: var(--font-display); font-size: 0.95rem; }
   .legend li { display: flex; align-items: center; gap: 8px; }
   .swatch { display: inline-block; width: 12px; height: 12px; border-radius: 3px; background: var(--c); margin-right: 8px; }

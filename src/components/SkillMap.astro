@@ -1,6 +1,8 @@
 ---
 // Tabbed skill map. Without JS every panel is visible; the script turns it into tabs.
 import { skillAreas } from '../data';
+import ChessAnalysis from './ChessAnalysis.astro';
+import { decision, ARMS } from '../chess';
 ---
 <div class="skillmap">
   <div class="tabs" role="tablist" aria-label="Skill areas" hidden>
@@ -20,7 +22,20 @@ import { skillAreas } from '../data';
       {a.subs.map((s) => (
         <div class="sub">
           <h4>{s.name}</h4>
-          {s.cases ? (
+          {s.cases?.some((c) => c.expand) ? (
+            s.cases.map((c) => (
+              <details class="experiment" id={c.expand}>
+                <summary>
+                  <span class="code">{c.code}</span>
+                  <span class="what">{c.what}</span>
+                  <span class="result">Next game: {ARMS[decision.explore].label}</span>
+                  {c.stack && <span class="tags">{c.stack.map((t) => <span class="tag">{t}</span>)}</span>}
+                  <span class="toggle caps"><span class="show">See the experiment</span><span class="hide">Hide the experiment</span></span>
+                </summary>
+                <div class="experiment-body"><ChessAnalysis level={3} /></div>
+              </details>
+            ))
+          ) : s.cases ? (
             <ul class="cases">
               {s.cases.map((c) => (
                 <li>
@@ -67,13 +82,23 @@ import { skillAreas } from '../data';
       });
     });
 
-    // Links elsewhere on the page (the hero index) open a tab by hash.
+    // Links elsewhere on the page (hero index, top bar) open a tab, or an experiment, by hash.
     const fromHash = () => {
       const i = panels.findIndex((p) => `#${p.id}` === location.hash);
-      if (i >= 0) { select(i); root.scrollIntoView({ block: 'start' }); }
+      if (i >= 0) { select(i); root.scrollIntoView({ block: 'start' }); return; }
+      const exp = location.hash ? root.querySelector<HTMLDetailsElement>(`details${location.hash}`) : null;
+      if (exp) {
+        select(panels.findIndex((p) => p.contains(exp)));
+        exp.open = true;
+        exp.scrollIntoView({ block: 'start' });
+      }
     };
+    root.closest('body')?.querySelectorAll<HTMLAnchorElement>('a[href="/#chess"]').forEach((a) =>
+      a.addEventListener('click', () => setTimeout(fromHash, 0)),
+    );
     window.addEventListener('hashchange', fromHash);
     select(Math.max(0, panels.findIndex((p) => `#${p.id}` === location.hash)));
+    fromHash();
   }
 </script>
 
@@ -103,6 +128,21 @@ import { skillAreas } from '../data';
   .code a { text-decoration-color: var(--rule); }
   .what { color: var(--muted); font-size: 1rem; line-height: 1.5; }
   .result { font: 650 1rem var(--font-display); color: var(--green); margin-top: 8px !important; }
+
+  .experiment { border: 1px solid var(--rule); border-radius: 14px; background: var(--surface); }
+  .experiment summary { display: grid; gap: 6px; padding: 18px 22px; cursor: pointer; list-style: none; }
+  .experiment summary::-webkit-details-marker { display: none; }
+  .experiment summary:hover .code { text-decoration: underline; text-underline-offset: 0.2em; text-decoration-thickness: 1px; }
+  .experiment .what { max-width: 60ch; }
+  .experiment .tags { margin: 4px 0 0; }
+  .experiment .tag { font-size: 0.78rem; color: var(--muted); border: 1px solid var(--rule); border-radius: 999px; padding: 2px 10px; }
+  .toggle { color: var(--accent); margin-top: 8px; }
+  .toggle::after { content: ' +'; }
+  .experiment[open] .toggle::after { content: ' −'; }
+  .toggle .hide, .experiment[open] .toggle .show { display: none; }
+  .experiment[open] .toggle .hide { display: inline; }
+  .experiment[open] summary { border-bottom: 1px solid var(--rule); }
+  .experiment-body { padding: 8px 22px 22px; }
 
   .items { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 10px; }
   .items li { font: 400 0.95rem var(--font-ui); border: 1px solid var(--rule); border-radius: 8px; padding: 5px 12px; background: var(--surface); }

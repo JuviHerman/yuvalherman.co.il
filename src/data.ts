@@ -118,7 +118,7 @@ export const languages = ['Hebrew (native)', 'English (native)'];
 
 // Skill map for the home page. Projects are deliberately terse: what was done and
 // what it moved, not how.
-export type Case = { code: string; what: string; result?: string; stack?: string[]; href?: string };
+export type Case = { code: string; what: string; result?: string; stack?: string[]; href?: string; expand?: 'chess' };
 export type SubSkill = { name: string; cases?: Case[]; items?: string[] };
 export type SkillArea = { id: string; name: string; tagline: string; subs: SubSkill[] };
 
@@ -146,6 +146,12 @@ export const skillAreas: SkillArea[] = [
         name: 'Time series',
         cases: [
           { code: 'Forward Look', what: 'Forecasts for Finance, built on trend and seasonality.', stack: ['Prophet'] },
+        ],
+      },
+      {
+        name: 'Sampling',
+        cases: [
+          { code: 'Night Shift', what: 'A live two-armed bandit over my own chess games: Mac at night or phone by day. Bayes-UCB picks the next game; the data refreshes daily.', stack: ['Beta posteriors', 'Bayes-UCB', 'chess.com API'], expand: 'chess' },
         ],
       },
     ],

@@ -1,7 +1,6 @@
 ---
 import '../styles/global.css';
 import { profile } from '../data';
-import ChessRail from '../components/ChessRail.astro';
 
 interface Props {
   title?: string;
@@ -97,7 +96,6 @@ const linkedin = 'M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.
         <p class="muted"><a href="/rss.xml">RSS</a>. Built with Astro, hosted on GitHub Pages.</p>
       </div>
     </footer>
-    <ChessRail />
     <script>
       const root = document.documentElement;
       document.querySelector('.theme')?.addEventListener('click', () => {
@@ -122,7 +120,12 @@ const linkedin = 'M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.
           const line = innerHeight * 0.35;
           const atBottom = innerHeight + scrollY >= document.documentElement.scrollHeight - 4;
           let current = sections[0].id;
-          for (const s of sections) if (s.getBoundingClientRect().top <= line) current = s.id;
+          let best = -Infinity;
+          for (const s of sections) {
+            if (!s.offsetParent) continue; // inside a hidden tab
+            const top = s.getBoundingClientRect().top;
+            if (top <= line && top > best) { best = top; current = s.id; }
+          }
           if (atBottom) current = sections.at(-1)!.id;
           mark(current);
         };

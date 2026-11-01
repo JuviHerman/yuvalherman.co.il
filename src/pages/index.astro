@@ -3,7 +3,6 @@ import Base from '../layouts/Base.astro';
 import SkillMap from '../components/SkillMap.astro';
 import CutoffLab from '../components/CutoffLab.astro';
 import PostList from '../components/PostList.astro';
-import ChessAnalysis from '../components/ChessAnalysis.astro';
 import { profile, jobs, skillAreas, languages } from '../data';
 import { getPosts } from '../lib';
 
@@ -80,17 +79,10 @@ const posts = (await getPosts()).slice(0, 3);
         </p>
         <p>
           Away from work I play competitive chess in a local league, and I treat that like a modeling
-          problem too. The panel on the side of this page picks my next game.
+          problem too: <a href="/#chess">a bandit</a> picks my next game.
         </p>
         <p class="muted">{languages.join(' and ')}.</p>
       </div>
-    </div>
-  </section>
-
-  <section class="section" id="chess">
-    <div class="wrap chess-wrap">
-      <p class="caps kicker">Off the clock</p>
-      <ChessAnalysis level={2} />
     </div>
   </section>
 
@@ -142,8 +134,6 @@ const posts = (await getPosts()).slice(0, 3);
   }
 
   .section-title { font-size: var(--step-2); margin-bottom: 28px; }
-  .chess-wrap { max-width: 880px; }
-  .chess-wrap :global(.title) { font-size: var(--step-3); }
   .about p { margin-bottom: 1.1em; }
   .contact { text-align: center; }
   .contact h2 { font-size: var(--step-3); }
