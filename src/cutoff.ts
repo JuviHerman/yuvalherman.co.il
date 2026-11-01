@@ -19,56 +19,34 @@ export const applicants = [
   ...Array.from({ length: 96 }, () => ({ s: sigmoid(normal() * 1.05 + 0.55), bad: 1 })),
 ].map((a) => ({ s: Math.round(a.s * 1000) / 1000, bad: a.bad }));
 
-export const nBad = applicants.filter((a) => a.bad).length;
-export const nGood = applicants.length - nBad;
-
-// ROC points from strictest to most lenient cutoff.
-export const roc: [number, number][] = (() => {
-  const pts: [number, number][] = [[0, 0]];
-  let tp = 0, fp = 0;
-  for (const a of [...applicants].sort((x, y) => y.s - x.s)) {
-    a.bad ? tp++ : fp++;
-    pts.push([fp / nGood, tp / nBad]);
+// Positive = flagged as a defaulter and declined (everyone scoring at or above the cutoff).
+export function confusion(cut: number) {
+  let tp = 0, fp = 0, fn = 0, tn = 0;
+  for (const a of applicants) {
+    if (a.s >= cut) a.bad ? tp++ : fp++;
+    else a.bad ? fn++ : tn++;
   }
-  return pts;
-})();
+  return { tp, fp, fn, tn };
+}
 
-export const auc = roc.reduce((sum, [f, t], i) => (i ? sum + (f - roc[i - 1][0]) * (t + roc[i - 1][1]) / 2 : 0), 0);
+export type Values = { tp: number; fp: number; fn: number; tn: number };
+// Money per case, signed: gains on the correct calls, costs on the mistakes.
+export const DEFAULT_VALUES: Values = { tp: 1000, fp: -250, fn: -1000, tn: 250 };
 
-// Everyone scoring at or above the cutoff is declined.
-export function rates(cut: number) {
-  let tp = 0, fp = 0;
-  for (const a of applicants) if (a.s >= cut) a.bad ? tp++ : fp++;
-  return {
-    missedDefaults: nBad - tp,
-    declinedGood: fp,
-    tpr: tp / nBad,
-    fpr: fp / nGood,
-    approved: (applicants.length - tp - fp) / applicants.length,
-  };
+export function net(cut: number, v: Values) {
+  const m = confusion(cut);
+  return m.tp * v.tp + m.fp * v.fp + m.fn * v.fn + m.tn * v.tn;
 }
 
 export const MIN_CUT = 0.05;
 export const MAX_CUT = 0.95;
 export const cutoffs = Array.from({ length: 91 }, (_, i) => Math.round((MIN_CUT + i * 0.01) * 100) / 100);
+export const cutIndex = (c: number) => Math.round((c - MIN_CUT) * 100);
 
-export function cost(cut: number, lossPerDefault: number, profitPerGood: number) {
-  const r = rates(cut);
-  return r.missedDefaults * lossPerDefault + r.declinedGood * profitPerGood;
+export function netCurve(v: Values) {
+  const values = cutoffs.map((c) => net(c, v));
+  return { values, max: Math.max(...values), min: Math.min(...values) };
 }
 
-export function costCurve(lossPerDefault: number, profitPerGood: number) {
-  const values = cutoffs.map((c) => cost(c, lossPerDefault, profitPerGood));
-  let bestIndex = 0;
-  values.forEach((v, i) => { if (v < values[bestIndex]) bestIndex = i; });
-  return { values, best: cutoffs[bestIndex], bestCost: values[bestIndex], max: Math.max(...values, 1) };
-}
-
-// Vertical position on the cost chart, scaled from just under the minimum so the dip is visible.
-export function costY(v: number, curve: { bestCost: number; max: number }, top: number, height: number) {
-  const lo = curve.bestCost * 0.9;
-  return top + height * (1 - (v - lo) / Math.max(curve.max - lo, 1));
-}
-
-export const money = (v: number) => `$${Math.round(v).toLocaleString('en-US')}`;
-export const pct = (v: number) => `${Math.round(v * 100)}%`;
+export const money = (v: number) => `${v < 0 ? '−' : ''}$${Math.abs(Math.round(v)).toLocaleString('en-US')}`;
+export const signed = (v: number) => (v > 0 ? '+' : '') + money(v);

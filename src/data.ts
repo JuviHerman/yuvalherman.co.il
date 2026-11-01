@@ -184,20 +184,21 @@ export const skillAreas: SkillArea[] = [
       {
         name: 'Uplift modeling',
         cases: [
-          { code: 'Second Call', what: 'A decisioning layer for Collections that picks each customer’s treatment by their estimated response: not who will pay, but who will pay because we acted.', stack: ['Uplift models', 'Causal inference'] },
+          { code: 'Self Cure', what: 'In collections, finding the customers who will repay on their own, so they come out of the at-risk group and treatment goes where it changes the outcome.', stack: ['Uplift models', 'Causal inference'] },
         ],
       },
       {
         name: 'Thresholds',
         cases: [
-          { code: 'The Cutoff', what: 'Price the two kinds of mistake, then find the threshold that costs least. Try it below.', stack: ['ROC', 'Cost curves'], href: '/#lab' },
+          { code: 'The Cutoff', what: 'Put a price on every cell of the confusion matrix, then slide the threshold to the most profitable point. Try it below.', stack: ['Confusion matrix', 'Net profit'], href: '/#lab' },
         ],
       },
       {
         name: 'Sampling',
         cases: [
-          { code: 'Night Shift', what: 'A live two-armed bandit over my own chess games: Mac at night or phone by day. Bayes-UCB picks the next game; the data refreshes daily.', stack: ['Beta posteriors', 'Bayes-UCB', 'chess.com API'], expand: 'chess' },
+          { code: 'Chess Arm Bandits', what: 'A live two-armed bandit over my own chess games: Mac at night or phone by day. Bayes-UCB picks the next game; the data refreshes daily.', stack: ['Beta posteriors', 'Bayes-UCB', 'chess.com API'], expand: 'chess' },
         ],
+        items: ['Random sampling', 'Reservoir sampling', 'Importance sampling', 'Multi-armed bandits'],
       },
       { name: 'Experimentation', items: ['A/B testing', 'Causal inference', 'Imbalanced data'] },
     ],

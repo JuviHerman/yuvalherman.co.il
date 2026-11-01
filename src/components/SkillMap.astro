@@ -22,6 +22,7 @@ import { decision, ARMS } from '../chess';
       {a.subs.map((s) => (
         <div class="sub">
           <h4>{s.name}</h4>
+          <div class="body">
           {s.cases?.some((c) => c.expand) ? (
             s.cases.map((c) => (
               <details class="experiment" id={c.expand}>
@@ -46,9 +47,9 @@ import { decision, ARMS } from '../chess';
                 </li>
               ))}
             </ul>
-          ) : (
-            <ul class="items">{s.items?.map((t) => <li>{t}</li>)}</ul>
-          )}
+          ) : null}
+          {s.items && <ul class:list={['items', { after: s.cases }]}>{s.items.map((t) => <li>{t}</li>)}</ul>}
+          </div>
         </div>
       ))}
     </section>
@@ -144,6 +145,7 @@ import { decision, ARMS } from '../chess';
   .experiment[open] summary { border-bottom: 1px solid var(--rule); }
   .experiment-body { padding: 8px 22px 22px; }
 
+  .items.after { margin-top: 16px; }
   .items { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 10px; }
   .items li { font: 400 0.95rem var(--font-ui); border: 1px solid var(--rule); border-radius: 8px; padding: 5px 12px; background: var(--surface); }
 </style>

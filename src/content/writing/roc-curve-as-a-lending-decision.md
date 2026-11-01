@@ -14,7 +14,7 @@ A scoring model gives each applicant a probability of default. To make a decisio
 - **True positive rate**: the share of eventual defaulters you declined.
 - **False positive rate**: the share of good customers you declined along with them.
 
-Slide the cutoff from strict to lenient and you trace the ROC curve. Every point on it is a real, shippable policy. The curve on the [home page](/#lab) is interactive for this reason. Drag the threshold and watch the trade-off move.
+Slide the cutoff from strict to lenient and you trace the ROC curve. Every point on it is a real, shippable policy. The [threshold game](/#lab) on the home page is built on this idea: price each outcome, drag the threshold and watch net profit move.
 
 ## Where the business lives on the curve
 
