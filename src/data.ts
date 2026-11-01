@@ -1,5 +1,7 @@
 // Single source of truth for profile content. Edit here; every page reads from it.
 
+export const domains = ['Lending', 'Fraud', 'Collections', 'Financial documents', 'Consumer apps'];
+
 export const profile = {
   name: 'Yuval Herman',
   role: 'Senior Data Scientist',
@@ -8,7 +10,7 @@ export const profile = {
   linkedin: 'https://www.linkedin.com/in/hermanyuval',
   github: 'https://github.com/JuviHerman',
   summary:
-    'Data scientist with 6 years of experience building and deploying machine learning for credit risk and fraud. Before that, a CPA: I audited companies, ran the numbers as a controller, and wrote software for an accounting firm.',
+    'Data scientist with 6 years of experience turning data into decisions: prediction, risk and fraud, ranking, causal decisioning and LLM evaluation. Before that, a CPA: I audited companies, ran the numbers as a controller, and wrote software for an accounting firm.',
 };
 
 export type Job = {
@@ -116,24 +118,22 @@ export const education = [
 
 export const languages = ['Hebrew (native)', 'English (native)'];
 
-// Skill map for the home page. Projects are deliberately terse: what was done and
-// what it moved, not how.
+// Skill map for the home page, grouped by the question each skill answers. Projects are
+// deliberately terse: what was done and what it moved, not how.
 export type Case = { code: string; what: string; result?: string; stack?: string[]; href?: string; expand?: 'chess' };
 export type SubSkill = { name: string; cases?: Case[]; items?: string[] };
 export type SkillArea = { id: string; name: string; tagline: string; subs: SubSkill[] };
 
 export const skillAreas: SkillArea[] = [
   {
-    id: 'ml',
-    name: 'Machine learning',
-    tagline: 'Models that decide who gets approved, flagged or forecast.',
+    id: 'predict',
+    name: 'Predict',
+    tagline: 'What will happen next?',
     subs: [
       {
-        name: 'Classification',
+        name: 'Time series',
         cases: [
-          { code: 'Three Markets', what: 'Credit-risk scoring for lending in three countries, owned from the first feature to production monitoring.', result: '+0.07 ROC-AUC over baseline', stack: ['LightGBM', 'SHAP', 'Optuna'] },
-          { code: 'Quiet Signals', what: 'Fraud-detection rules for a lending population.', result: 'Fraud down 2.5%' },
-          { code: 'Network Effects', what: 'Behavioral and graph-based features feeding the risk models.', stack: ['Graph features', 'GNNs', 'Neptune'] },
+          { code: 'Forward Look', what: 'Forecasts for Finance, built on trend and seasonality.', stack: ['Prophet'] },
         ],
       },
       {
@@ -142,10 +142,55 @@ export const skillAreas: SkillArea[] = [
           { code: 'Revaluation', what: 'Bond-risk research combining yield curves, convex optimization and machine learning.', stack: ['Convex optimization', 'Fixed income'], href: 'https://github.com/JuviHerman/Revaluations' },
         ],
       },
+    ],
+  },
+  {
+    id: 'detect',
+    name: 'Detect',
+    tagline: 'What is risky, or quietly wrong?',
+    subs: [
       {
-        name: 'Time series',
+        name: 'Fraud',
         cases: [
-          { code: 'Forward Look', what: 'Forecasts for Finance, built on trend and seasonality.', stack: ['Prophet'] },
+          { code: 'Quiet Signals', what: 'Fraud-detection rules for a lending population.', result: 'Fraud down 2.5%' },
+        ],
+      },
+      {
+        name: 'Graph signals',
+        cases: [
+          { code: 'Network Effects', what: 'Behavioral and graph-based features that surface risk hiding in connections.', stack: ['Graph features', 'GNNs', 'Neptune'] },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'rank',
+    name: 'Rank',
+    tagline: 'What comes first?',
+    subs: [
+      {
+        name: 'Risk scoring',
+        cases: [
+          { code: 'Three Markets', what: 'Credit-risk scores that order applicants from safest to riskiest in three countries, owned from the first feature to production monitoring.', result: '+0.07 ROC-AUC over baseline', stack: ['LightGBM', 'SHAP', 'Optuna'] },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'decide',
+    name: 'Decide',
+    tagline: 'Which treatment to provide, and which action pays off?',
+    subs: [
+      {
+        name: 'Uplift modeling',
+        cases: [
+          { code: 'Second Call', what: 'A decisioning layer for Collections that picks each customer’s treatment by their estimated response: not who will pay, but who will pay because we acted.', stack: ['Uplift models', 'Causal inference'] },
+        ],
+      },
+      {
+        name: 'Thresholds',
+        cases: [
+          { code: 'The Cutoff', what: 'Price the two kinds of mistake, then find the threshold that costs least. Try it below.', stack: ['ROC', 'Cost curves'], href: '/#lab' },
         ],
       },
       {
@@ -154,26 +199,13 @@ export const skillAreas: SkillArea[] = [
           { code: 'Night Shift', what: 'A live two-armed bandit over my own chess games: Mac at night or phone by day. Bayes-UCB picks the next game; the data refreshes daily.', stack: ['Beta posteriors', 'Bayes-UCB', 'chess.com API'], expand: 'chess' },
         ],
       },
+      { name: 'Experimentation', items: ['A/B testing', 'Causal inference', 'Imbalanced data'] },
     ],
   },
   {
-    id: 'causal',
-    name: 'Causal inference',
-    tagline: 'Not who will pay, but who will pay because we acted.',
-    subs: [
-      {
-        name: 'Uplift modeling',
-        cases: [
-          { code: 'Second Call', what: 'A decisioning layer for Collections that picks each customer’s treatment by their estimated response.', stack: ['Uplift models', 'Causal inference'] },
-        ],
-      },
-      { name: 'Experimentation', items: ['A/B testing', 'Imbalanced data', 'Explainability', 'Drift monitoring'] },
-    ],
-  },
-  {
-    id: 'genai',
-    name: 'GenAI',
-    tagline: 'LLMs that do real work, measured before they ship.',
+    id: 'evaluate',
+    name: 'Evaluate',
+    tagline: 'Which model can we trust?',
     subs: [
       {
         name: 'LLM evaluations',
@@ -181,35 +213,29 @@ export const skillAreas: SkillArea[] = [
           { code: 'Seven Readers', what: 'Seven LLMs from the leading AI labs, including Meta, Amazon, Google and Anthropic, put head to head on parsing financial documents, scored with metrics designed for the task.', result: 'Accuracy, price and latency compared', stack: ['Evaluation design', 'Document parsing'] },
         ],
       },
+      { name: 'Model checks', items: ['Explainability', 'SHAP', 'Drift monitoring', 'Feature-accuracy validation'] },
+    ],
+  },
+  {
+    id: 'build',
+    name: 'Build',
+    tagline: 'Does it run for real?',
+    subs: [
       {
         name: 'Agentic workflows',
         cases: [
           { code: 'Autopilot', what: 'Agents that train models, validate feature accuracy and parse documents, with a human signing off at the checkpoints.', stack: ['Agent skills', 'MCP', 'AWS Bedrock'] },
         ],
       },
-    ],
-  },
-  {
-    id: 'apps',
-    name: 'Apps',
-    tagline: 'Products I build and ship on my own.',
-    subs: [
       {
-        name: 'Mobile',
+        name: 'Apps',
         cases: [
           { code: 'The Global Min', what: 'A data-science interview-prep app with 900+ adaptive scenario questions across nine topics, written with an LLM content pipeline and automated quality checks.', result: 'On the App Store', stack: ['SwiftUI', 'LLM content pipeline'], href: 'https://theglobalmin.app' },
         ],
       },
-    ],
-  },
-  {
-    id: 'tools',
-    name: 'Tools',
-    tagline: 'What I reach for every day.',
-    subs: [
       { name: 'Languages', items: ['Python', 'SQL', 'Gremlin'] },
       { name: 'Building with AI', items: ['Claude Code', 'MCP', 'AWS Bedrock', 'OpenAI', 'RAG'] },
-      { name: 'Modeling', items: ['LightGBM', 'XGBoost', 'CatBoost', 'scikit-learn', 'PyTorch Geometric', 'Prophet', 'Optuna', 'SHAP'] },
+      { name: 'Modeling', items: ['LightGBM', 'XGBoost', 'CatBoost', 'scikit-learn', 'PyTorch Geometric', 'Prophet', 'Optuna'] },
       { name: 'Production', items: ['MLflow', 'SageMaker', 'Docker', 'Lambda', 'Step Functions', 'Git'] },
       { name: 'Data', items: ['AWS', 'Snowflake', 'Redshift', 'Neptune'] },
     ],

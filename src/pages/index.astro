@@ -3,7 +3,7 @@ import Base from '../layouts/Base.astro';
 import SkillMap from '../components/SkillMap.astro';
 import CutoffLab from '../components/CutoffLab.astro';
 import PostList from '../components/PostList.astro';
-import { profile, jobs, skillAreas, languages } from '../data';
+import { profile, jobs, skillAreas, languages, domains } from '../data';
 import { getPosts } from '../lib';
 
 const posts = (await getPosts()).slice(0, 3);
@@ -15,9 +15,10 @@ const posts = (await getPosts()).slice(0, 3);
       <h1>Yuval Herman</h1>
       <p class="caps kicker">{profile.role}, {profile.location}</p>
       <p class="lede">
-        I build machine learning for lending: who gets approved, what looks like fraud, and who is
-        worth a call. Before data science I was a CPA, and I still read every model like a ledger.
+        Data science for decisions under uncertainty: who to approve, what to rank first, which
+        treatment to provide, which action pays off, and which model to trust.
       </p>
+      <p class="domains muted">Worked across {domains.join(' · ')}</p>
       <ul class="areas" aria-label="Skill areas">
         {skillAreas.map((a) => <li><a href={`#skill-${a.id}`}>{a.name}</a></li>)}
       </ul>
@@ -99,7 +100,7 @@ const posts = (await getPosts()).slice(0, 3);
   <section class="section" id="contact">
     <div class="wrap contact">
       <h2>Get in touch</h2>
-      <p class="lede">Open to conversations about credit risk, causal ML and applied AI. Email is the fastest way to reach me.</p>
+      <p class="lede">Open to conversations about prediction, risk, causal decisioning and applied AI. Email is the fastest way to reach me.</p>
       <div class="actions">
         <a class="button" href={`mailto:${profile.email}`}>{profile.email}</a>
         <a class="button ghost" href={profile.linkedin}>LinkedIn</a>
@@ -122,6 +123,7 @@ const posts = (await getPosts()).slice(0, 3);
   h1 { font-size: clamp(3rem, 7vw, 5.4rem); line-height: 1; margin-bottom: 0.35em; }
   .kicker { color: var(--accent); margin-bottom: 22px; }
   .lede { font-size: 1.2rem; line-height: 1.6; max-width: 46ch; margin-left: auto; }
+  .domains { font-size: 0.95rem; margin: 10px 0 0 auto; max-width: 46ch; }
   .areas { list-style: none; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px 18px; margin: 18px 0 0; padding: 0; }
   .areas a { font-family: var(--font-heading); font-size: 1.2rem; }
   .actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 12px; margin-top: 28px; }
@@ -129,7 +131,7 @@ const posts = (await getPosts()).slice(0, 3);
     .hero { grid-template-columns: minmax(0, 1fr); }
     .portrait { max-width: 260px; justify-self: center; }
     .intro { text-align: center; }
-    .lede { margin: 0 auto; }
+    .lede, .domains { margin-left: auto; margin-right: auto; }
     .areas, .actions { justify-content: center; }
   }
 
