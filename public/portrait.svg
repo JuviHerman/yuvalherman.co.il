@@ -19,7 +19,7 @@
   </defs>
 
   <!-- Speech-bubble frame, as in the reference -->
-  <path d="M385 200 L385 385 L200 385 A185 185 0 1 1 385 200 Z" fill="#17704f" />
+  <path d="M385 200 L385 385 L200 385 A185 185 0 1 1 385 200 Z" fill="#516db0" />
   <circle cx="200" cy="200" r="158" fill="#ffffff" />
 
   <g clip-path="url(#disc)">

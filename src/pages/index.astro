@@ -10,28 +10,22 @@ const posts = (await getPosts()).slice(0, 3);
 ---
 <Base>
   <section class="hero wrap">
-    <div class="persona">
-      <img class="portrait" src="/portrait.svg" alt="Illustrated portrait of Yuval Herman" width="168" height="168" />
-      <h1>Yuval<br />Herman</h1>
-      <p class="role">{profile.role}, {profile.location}</p>
-      <p class="lede">Machine learning for lending. Formerly a CPA.</p>
+    <img class="portrait" src="/portrait.svg" alt="Illustrated portrait of Yuval Herman" width="400" height="400" />
+    <div class="intro">
+      <h1>Yuval Herman</h1>
+      <p class="caps kicker">{profile.role}, {profile.location}</p>
+      <p class="lede">
+        I build machine learning for lending: who gets approved, what looks like fraud, and who is
+        worth a call. Before data science I was a CPA, and I still read every model like a ledger.
+      </p>
+      <ul class="areas" aria-label="Skill areas">
+        {skillAreas.map((a) => <li><a href={`#skill-${a.id}`}>{a.name}</a></li>)}
+      </ul>
       <div class="actions">
         <a class="button" href={`mailto:${profile.email}`}>Email me</a>
         <a class="button ghost" href="/cv/">Read my CV</a>
       </div>
     </div>
-    <nav class="index" aria-label="Skill areas">
-      <ul>
-        {skillAreas.map((a) => (
-          <li>
-            <a href={`#skill-${a.id}`}>
-              <span class="area">{a.name}</span>
-              <span class="subs">{a.subs.map((s) => s.name).join(', ')}</span>
-            </a>
-          </li>
-        ))}
-      </ul>
-    </nav>
   </section>
 
   <section class="section" id="skills">
@@ -83,36 +77,37 @@ const posts = (await getPosts()).slice(0, 3);
 
 <style>
   .hero {
-    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: clamp(32px, 6vw, 96px); align-items: end;
-    padding-top: clamp(32px, 7vw, 96px); padding-bottom: clamp(56px, 8vw, 104px);
+    display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: clamp(32px, 6vw, 88px); align-items: center;
+    padding-top: clamp(32px, 6vw, 80px); padding-bottom: clamp(56px, 8vw, 104px);
   }
-  @media (max-width: 860px) { .hero { grid-template-columns: minmax(0, 1fr); align-items: start; } }
-
-  .portrait { display: block; width: clamp(120px, 16vw, 168px); height: auto; margin: 0 0 20px -6px; }
-  h1 { font-size: clamp(3.6rem, 11vw, 8.5rem); line-height: 0.9; letter-spacing: -0.045em; font-weight: 800; margin-bottom: 0.3em; }
-  .role { font-family: var(--font-display); font-weight: 600; font-size: var(--step-1); color: var(--green); margin-bottom: 6px; }
-  .lede { font-size: 1.25rem; color: var(--muted); }
-  .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; }
-
-  .index ul { list-style: none; margin: 0; padding: 0; border-top: 2px solid var(--ink); }
-  .index li { border-bottom: 1px solid var(--rule); }
-  .index a { display: grid; gap: 2px; padding: 16px 0; text-decoration: none; }
-  .area { font: 700 clamp(1.6rem, 3.2vw, 2.3rem)/1.1 var(--font-display); letter-spacing: -0.025em; }
-  .subs { font-family: var(--font-display); color: var(--muted); font-size: 1rem; }
-  .index a:hover .area { color: var(--green); }
+  .portrait { display: block; width: 100%; max-width: 400px; height: auto; justify-self: start; }
+  .intro { text-align: right; }
+  h1 { font-size: clamp(3rem, 7vw, 5.4rem); line-height: 1; margin-bottom: 0.35em; }
+  .kicker { color: var(--accent); margin-bottom: 22px; }
+  .lede { font-size: 1.2rem; line-height: 1.6; max-width: 46ch; margin-left: auto; }
+  .areas { list-style: none; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px 18px; margin: 18px 0 0; padding: 0; }
+  .areas a { font-family: var(--font-heading); font-size: 1.2rem; }
+  .actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 12px; margin-top: 28px; }
+  @media (max-width: 860px) {
+    .hero { grid-template-columns: minmax(0, 1fr); }
+    .portrait { max-width: 260px; justify-self: center; }
+    .intro { text-align: center; }
+    .lede { margin: 0 auto; }
+    .areas, .actions { justify-content: center; }
+  }
 
   .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
   .lab-head { margin-bottom: 28px; }
-  .lab-head h2 { font-size: var(--step-3); margin-bottom: 0.2em; }
+  .lab-head h2 { font-size: var(--step-2); margin-bottom: 0.2em; }
   .lab-head p { font-size: 1.15rem; margin: 0; }
 
   .timeline { list-style: none; margin: 0 0 20px; padding: 0; }
   .timeline li { display: grid; grid-template-columns: 12ch minmax(0, 1fr); gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--rule); }
   .timeline li:first-child { padding-top: 0; }
   .years { font-family: var(--font-display); font-size: 0.95rem; padding-top: 0.15em; }
-  .timeline strong { font-family: var(--font-display); font-weight: 600; }
+  .timeline strong { font-weight: 550; }
 
   .more { margin-top: 20px; }
 </style>

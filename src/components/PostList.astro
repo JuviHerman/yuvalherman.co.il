@@ -23,8 +23,8 @@ const { posts } = Astro.props;
   li { padding: 18px 0; border-bottom: 1px solid var(--rule); }
   li:first-child { padding-top: 0; }
   a { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 4px 20px; text-decoration: none; }
-  .t { font-family: var(--font-display); font-weight: 600; font-size: var(--step-1); line-height: 1.25; }
-  a:hover .t { color: var(--green); }
+  .t { font-family: var(--font-heading); font-weight: 400; font-size: var(--step-1); line-height: 1.25; color: var(--accent); }
+  a:hover .t { text-decoration: underline; text-underline-offset: 0.2em; text-decoration-thickness: 1px; }
   time { font-size: var(--step--1); white-space: nowrap; }
   p { margin: 6px 0 0; max-width: var(--measure); }
   .draft { color: var(--red); font-style: normal; font-size: 0.8em; }

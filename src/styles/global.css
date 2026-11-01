@@ -1,27 +1,31 @@
-/* Palette: navy ledger ink on cool paper, with the accountant's two inks —
-   green for what clears (approve), red for what doesn't (decline). */
+/* Apéro-style theme: soft off-white page, white cards, light Fraunces headings in a
+   single periwinkle accent, Commissioner for everything else.
+   Green and red stay reserved for approve/decline in the cutoff tool. */
 :root {
-  --paper: #edf0f3;
-  --surface: #f8f9fb;
-  --ink: #13203a;
-  --muted: #566173;
-  --rule: #c8cfd9;
-  --green: #17704f;
-  --red: #b0323f;
-  --focus: #2f5fd0;
-  --night: #4453c9;
+  --paper: #f2f2f1;
+  --surface: #ffffff;
+  --ink: #404040;
+  --muted: #6e6e6c;
+  --rule: #dcdcd9;
+  --accent: #516db0;
+  --green: #2e7d5b;
+  --red: #b4434f;
+  --focus: #516db0;
+  --night: #7a3f8f;
   --day: #b06f0c;
 
-  --font-display: 'Bricolage Grotesque', 'Helvetica Neue', Arial, sans-serif;
-  --font-body: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+  --font-heading: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --font-ui: 'Commissioner', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  /* Legacy alias: component labels and UI text */
+  --font-display: var(--font-ui);
+  --font-body: var(--font-ui);
 
-  /* Type scale (ratio ~1.25, body 18px) */
-  --step--1: 0.889rem;
-  --step-0: 1.125rem;
-  --step-1: 1.4rem;
-  --step-2: 1.75rem;
-  --step-3: 2.2rem;
-  --step-4: clamp(2.4rem, 5.2vw, 3.9rem);
+  --step--1: 0.875rem;
+  --step-0: 1.0625rem;
+  --step-1: 1.45rem;
+  --step-2: 1.9rem;
+  --step-3: 2.4rem;
+  --step-4: clamp(2.6rem, 6vw, 4.6rem);
 
   --measure: 66ch;
   --page: 1120px;
@@ -31,29 +35,31 @@
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
-    --paper: #0e1626;
-    --surface: #142036;
-    --ink: #e4e9f1;
-    --muted: #97a3b6;
-    --rule: #2a3854;
-    --green: #52c79c;
-    --red: #ef7c87;
-    --focus: #8fb0ff;
-    --night: #9aa5ff;
+    --paper: #1c1d21;
+    --surface: #26282e;
+    --ink: #dadada;
+    --muted: #a3a3a3;
+    --rule: #3a3c44;
+    --accent: #9fb3ee;
+    --green: #5cc59a;
+    --red: #ee7d88;
+    --focus: #9fb3ee;
+    --night: #cf9ce6;
     --day: #f0b450;
     color-scheme: dark;
   }
 }
 :root[data-theme='dark'] {
-  --paper: #0e1626;
-  --surface: #142036;
-  --ink: #e4e9f1;
-  --muted: #97a3b6;
-  --rule: #2a3854;
-  --green: #52c79c;
-  --red: #ef7c87;
-  --focus: #8fb0ff;
-  --night: #9aa5ff;
+  --paper: #1c1d21;
+  --surface: #26282e;
+  --ink: #dadada;
+  --muted: #a3a3a3;
+  --rule: #3a3c44;
+  --accent: #9fb3ee;
+  --green: #5cc59a;
+  --red: #ee7d88;
+  --focus: #9fb3ee;
+  --night: #cf9ce6;
   --day: #f0b450;
   color-scheme: dark;
 }
@@ -66,61 +72,66 @@ body {
   margin: 0;
   background: var(--paper);
   color: var(--ink);
-  font-family: var(--font-body);
+  font-family: var(--font-ui);
   font-size: var(--step-0);
-  line-height: 1.62;
-  font-optical-sizing: auto;
+  font-weight: 350;
+  line-height: 1.65;
   -webkit-font-smoothing: antialiased;
 }
 
-h1, h2, h3 {
-  font-family: var(--font-display);
-  line-height: 1.12;
-  letter-spacing: -0.015em;
-  font-weight: 650;
+h1, h2, h3, h4 {
+  font-family: var(--font-heading);
+  font-optical-sizing: auto;
+  color: var(--accent);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  font-weight: 400;
   margin: 0 0 0.6em;
   text-wrap: balance;
 }
-h1 { font-size: var(--step-4); font-weight: 700; letter-spacing: -0.03em; }
+h1 { font-size: var(--step-4); font-weight: 350; }
 h2 { font-size: var(--step-2); }
 h3 { font-size: var(--step-1); }
 
 p { margin: 0 0 1em; text-wrap: pretty; }
+strong { font-weight: 600; }
 
-a { color: inherit; text-decoration-color: var(--green); text-decoration-thickness: 1.5px; text-underline-offset: 0.2em; }
-a:hover { color: var(--green); }
+a { color: var(--accent); text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent); text-decoration-thickness: 1px; text-underline-offset: 0.22em; }
+a:hover { text-decoration-color: var(--accent); }
 
-:focus-visible { outline: 2.5px solid var(--focus); outline-offset: 3px; border-radius: 2px; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; border-radius: 2px; }
 
 .wrap { max-width: var(--page); margin: 0 auto; padding: 0 var(--gutter); }
 .prose { max-width: var(--measure); }
 .muted { color: var(--muted); }
 .num { font-variant-numeric: tabular-nums lining-nums; }
 
+/* Apéro's small spaced capitals, used for kickers and calls to action */
+.caps { font-family: var(--font-ui); font-size: 0.8rem; font-weight: 450; letter-spacing: 0.14em; text-transform: uppercase; }
+
 .skip { position: absolute; left: -9999px; }
 .skip:focus { left: var(--gutter); top: 8px; background: var(--surface); padding: 6px 10px; z-index: 10; }
 
-/* Section rhythm: a heading column beside content, like ledger account titles. */
 .section { padding: clamp(48px, 8vw, 88px) 0; border-top: 1px solid var(--rule); }
 .section-grid { display: grid; grid-template-columns: minmax(0, 240px) minmax(0, 1fr); gap: 24px 48px; }
-.section-grid > h2 { font-size: var(--step-1); margin: 0.2em 0 0; }
+.section-grid > h2 { font-size: var(--step-1); margin: 0.1em 0 0; }
 @media (max-width: 760px) {
   .section-grid { grid-template-columns: minmax(0, 1fr); }
 }
 
 .button {
   display: inline-flex; align-items: center; gap: 8px;
-  font-family: var(--font-display); font-weight: 600; font-size: 1rem;
-  padding: 10px 18px; border-radius: 999px;
-  background: var(--ink); color: var(--paper); text-decoration: none;
-  border: 1.5px solid var(--ink);
+  font-family: var(--font-ui); font-weight: 450; font-size: 0.8rem; letter-spacing: 0.14em; text-transform: uppercase;
+  padding: 11px 20px; border-radius: 999px;
+  background: var(--accent); color: var(--surface); text-decoration: none;
+  border: 1px solid var(--accent); cursor: pointer;
 }
-.button:hover { background: var(--green); border-color: var(--green); color: var(--paper); }
-.button.ghost { background: transparent; color: var(--ink); }
-.button.ghost:hover { border-color: var(--green); color: var(--green); }
+.button:hover { filter: brightness(1.08); }
+.button.ghost { background: transparent; color: var(--accent); }
+.button.ghost:hover { background: color-mix(in srgb, var(--accent) 10%, transparent); filter: none; }
 
 .tags { display: flex; flex-wrap: wrap; gap: 6px; padding: 0; margin: 10px 0 0; list-style: none; }
-.tags li { font-family: var(--font-display); font-size: 0.8rem; color: var(--muted); border: 1px solid var(--rule); border-radius: 999px; padding: 2px 10px; }
+.tags li { font-family: var(--font-ui); font-size: 0.78rem; color: var(--muted); border: 1px solid var(--rule); border-radius: 999px; padding: 2px 10px; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }

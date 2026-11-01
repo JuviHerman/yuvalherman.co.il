@@ -33,12 +33,12 @@ const nav = [
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
-    <meta name="theme-color" content="#13203a" />
+    <meta name="theme-color" content="#f2f2f1" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Commissioner:wght@300..700&family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..500&display=swap"
     />
     <script type="application/ld+json" set:html={JSON.stringify({
       '@context': 'https://schema.org',
@@ -87,14 +87,14 @@ const nav = [
     padding-top: 22px; padding-bottom: 22px;
   }
   .wordmark {
-    font-family: var(--font-display); font-weight: 750; font-size: 1.15rem; letter-spacing: -0.02em;
-    text-decoration: none;
+    font-family: var(--font-heading); font-weight: 450; font-size: 1.3rem; letter-spacing: -0.01em;
+    color: var(--accent); text-decoration: none;
   }
   nav ul { display: flex; gap: clamp(14px, 3vw, 28px); list-style: none; margin: 0; padding: 0; }
-  nav a { font-family: var(--font-display); font-weight: 500; text-decoration: none; color: var(--muted); }
-  nav a:hover, nav a[aria-current='page'] { color: var(--ink); text-decoration: underline; text-decoration-color: var(--green); text-underline-offset: 0.35em; }
+  nav a { font-family: var(--font-ui); font-size: 0.8rem; font-weight: 400; letter-spacing: 0.14em; text-transform: uppercase; text-decoration: none; color: var(--accent); }
+  nav a:hover, nav a[aria-current='page'] { text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 0.45em; }
   .site-footer { border-top: 1px solid var(--rule); margin-top: 24px; padding: 40px 0 56px; }
   .footer-inner { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 32px; }
-  .footer-inner p { margin: 0; max-width: 60ch; }
+  .footer-inner p { margin: 0; max-width: 60ch; font-size: 0.9rem; }
   @media print { .site-header, .site-footer, .skip { display: none; } }
 </style>
