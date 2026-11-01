@@ -2,6 +2,7 @@
 // Each arm's win rate gets a Beta posterior (uniform prior, draws count half).
 // The recommendation is Bayes-UCB: play the arm whose 90th percentile is higher.
 import snapshot from './data/chess-games.json';
+import synthetic from './data/chess-synthetic.json';
 
 export const NIGHT_FROM = 21; // 21:00 local time onwards counts as night (Mac)
 export const NIGHT_UNTIL = 6; // until 05:59
@@ -99,7 +100,16 @@ const decide = (p: Record<ArmId, Posterior>): Decision => {
   return { explore, exploit, agree: explore === exploit };
 };
 
-export const games = snapshot.games.map((g) => ({ ...g, ...parts(g.t), arm: armOf(parts(g.t).hour) }));
+// Simulated warm-up history (scripts/make-synthetic-chess.mjs) always precedes the live games.
+const liveStart = Math.min(...snapshot.games.map((g) => g.t));
+const merged = [
+  ...synthetic.games.filter((g) => g.t < liveStart).map((g) => ({ ...g, sim: true })),
+  ...snapshot.games.map((g) => ({ ...g, sim: false })),
+].sort((a, b) => a.t - b.t);
+
+export const games = merged.map((g) => ({ ...g, ...parts(g.t), arm: armOf(parts(g.t).hour) }));
+export const simulatedGames = games.filter((g) => g.sim).length;
+export const liveFrom = games.find((g) => !g.sim)?.date ?? null;
 
 const byArm = (list: typeof games) => ({
   night: posterior(list.filter((g) => g.arm === 'night').map((g) => g.s)),

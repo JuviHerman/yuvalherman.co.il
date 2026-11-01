@@ -1,7 +1,7 @@
 ---
 import ChessDensity from '../components/ChessDensity.astro';
 import ChessTimeline from '../components/ChessTimeline.astro';
-import { current, decision, timeline, rating, user, fetchedAt, ARMS, QUANTILE, pct, type ArmId } from '../chess';
+import { current, decision, timeline, rating, user, fetchedAt, simulatedGames, liveFrom, ARMS, QUANTILE, pct, type ArmId } from '../chess';
 
 const ids: ArmId[] = ['night', 'day'];
 const updated = new Date(fetchedAt).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Jerusalem' });
@@ -85,12 +85,19 @@ const embedded = level === 3;
         an arm by the hour it ended in Israel time: 21:00 to 06:00 is the Mac, the rest is the phone.
         Each arm's win rate gets a Beta posterior from a uniform prior, with draws counted as half a win.
       </p>
+      {simulatedGames > 0 && liveFrom && (
+        <p>
+          The games before {new Date(`${liveFrom}T12:00:00Z`).toLocaleDateString('en-GB', { day: 'numeric', month: 'long' })} are
+          a simulated warm-up history (<span class="num">{simulatedGames}</span> games) that seeds the posteriors;
+          every live game from chess.com is added on top.
+        </p>
+      )}
       <p>
         The next game goes to the arm with the higher {Math.round(QUANTILE * 100)}th percentile (Bayes-UCB):
         an arm with few games has a wide distribution, so its upside earns it more play until the data settles.
         The data refreshes daily.
       </p>
-      <p class="muted">{rating && <>Current rapid rating <span class="num">{rating}</span>. </>}Last updated {updated}.</p>
+      <p class="muted">{rating && <>Current chess.com rapid rating <span class="num">{rating}</span>. </>}Last updated {updated}.</p>
     </section>
 </div>
 
