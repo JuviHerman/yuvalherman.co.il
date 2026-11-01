@@ -2,11 +2,7 @@
 import Base from '../layouts/Base.astro';
 import SkillMap from '../components/SkillMap.astro';
 import CutoffLab from '../components/CutoffLab.astro';
-import PostList from '../components/PostList.astro';
-import { profile, jobs, skillAreas, languages, domains } from '../data';
-import { getPosts } from '../lib';
-
-const posts = (await getPosts()).slice(0, 3);
+import { profile, jobs, skillAreas, languages, domains, talks } from '../data';
 ---
 <Base>
   <section class="hero wrap" id="home">
@@ -87,12 +83,16 @@ const posts = (await getPosts()).slice(0, 3);
     </div>
   </section>
 
-  <section class="section" id="writing">
+  <section class="section" id="topics">
     <div class="wrap section-grid">
-      <h2>Writing</h2>
-      <div>
-        {posts.length > 0 ? <PostList posts={posts} /> : <p class="muted">First essays are on the way.</p>}
-        <p class="more"><a href="/writing/">All writing</a></p>
+      <h2>Happy to talk about</h2>
+      <div class="talks">
+        {talks.map((t) => (
+          <div>
+            <p class="caps talk-group">{t.group}</p>
+            <ul>{t.points.map((p) => <li>{p}</li>)}</ul>
+          </div>
+        ))}
       </div>
     </div>
   </section>
@@ -154,5 +154,9 @@ const posts = (await getPosts()).slice(0, 3);
   .years { font-family: var(--font-display); font-size: 0.95rem; padding-top: 0.15em; }
   .timeline strong { font-weight: 550; }
 
-  .more { margin-top: 20px; }
+  .talks { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 28px 40px; }
+  .talk-group { color: var(--accent); margin: 0 0 10px; }
+  .talks ul { margin: 0; padding: 0; list-style: none; }
+  .talks li { position: relative; padding: 0 0 10px 18px; line-height: 1.5; }
+  .talks li::before { content: ''; position: absolute; left: 0; top: 0.62em; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); opacity: 0.55; }
 </style>

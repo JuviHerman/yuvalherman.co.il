@@ -118,6 +118,47 @@ export const education = [
 
 export const languages = ['Hebrew (native)', 'English (native)'];
 
+// "Happy to talk about": conversations I can lead in an interview or over coffee.
+export const talks: { group: string; points: string[] }[] = [
+  {
+    group: 'Models and money',
+    points: [
+      'Why ROC-AUC isn’t a business metric, and what to put a price on instead.',
+      'Setting a cutoff when a missed default and a declined good customer cost very different amounts.',
+      'Rules or models in fraud, and when a simple rule wins.',
+      'Finding risk in who is connected to whom: graph features in credit.',
+      'Forecasts Finance can plan on, and how to talk about their uncertainty.',
+    ],
+  },
+  {
+    group: 'Decisions under uncertainty',
+    points: [
+      'Who will pay, versus who will pay because we called: uplift in collections.',
+      'Self-cure: when the best treatment is no treatment at all.',
+      'Bandits or A/B tests, and how to know when to stop exploring.',
+      'Declaring a winner: probability of being best, and why I wait for 95%.',
+      'Turning $80K a day at anchor against $3K a day of cranes into a scheduling rule.',
+      'Ranking under physical constraints: which container belongs on top.',
+    ],
+  },
+  {
+    group: 'GenAI in practice',
+    points: [
+      'Evaluating LLMs on a real task: accuracy, price and latency together.',
+      'Where agents speed up data science work, and where a human must sign off.',
+      'Building a content pipeline with LLMs, and the quality checks it needs.',
+    ],
+  },
+  {
+    group: 'How I work',
+    points: [
+      'Reading a model like a ledger: what an auditor’s eye catches in data.',
+      'Owning a model from the first feature to monitoring in production.',
+      'Shipping a product on my own, from idea to the App Store.',
+    ],
+  },
+];
+
 // Skill map for the home page: a few broad areas, each a grid of project cards.
 // Projects are deliberately terse. Wrap the action verbs in *asterisks* to highlight them.
 export type Case = { code: string; skill: string; what: string; result?: string; stack?: string[]; href?: string; linkLabel?: string; expand?: 'chess' };
