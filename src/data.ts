@@ -1,6 +1,6 @@
 // Single source of truth for profile content. Edit here; every page reads from it.
 
-export const domains = ['Lending', 'Fraud', 'Collections', 'Financial documents', 'Consumer apps'];
+export const domains = ['Lending', 'Fraud', 'Collections', 'Ports & logistics', 'Financial documents', 'Consumer apps'];
 
 export const profile = {
   name: 'Yuval Herman',
@@ -174,6 +174,12 @@ export const skillAreas: SkillArea[] = [
           { code: 'Three Markets', what: 'Credit-risk scores that order applicants from safest to riskiest in three countries, owned from the first feature to production monitoring.', result: '+0.07 ROC-AUC over baseline', stack: ['LightGBM', 'SHAP', 'Optuna'] },
         ],
       },
+      {
+        name: 'Prioritization',
+        cases: [
+          { code: 'Stack Order', what: 'Ranks where each container goes in port storage, so the urgent ones, like food, never wait under six others for the lift.', stack: ['Ranking', 'Logistics'] },
+        ],
+      },
     ],
   },
   {
@@ -185,6 +191,12 @@ export const skillAreas: SkillArea[] = [
         name: 'Uplift modeling',
         cases: [
           { code: 'Self Cure', what: 'In collections, finding the customers who will repay on their own, so they come out of the at-risk group and treatment goes where it changes the outcome.', stack: ['Uplift models', 'Causal inference'] },
+        ],
+      },
+      {
+        name: 'Optimization',
+        cases: [
+          { code: 'Berth Call', what: 'Which container ship enters the port to unload next: $80K a day waiting at anchor against $3K a day of lift work, with food cleared first and pickup timing modeled in.', result: 'Lowest net cost across decision points', stack: ['Decision modeling', 'Cost optimization'] },
         ],
       },
       {
