@@ -51,7 +51,6 @@ const embedded = level === 3;
           <li class={id}>
             <span class="swatch" aria-hidden="true"></span>
             <strong>{ARMS[id].label}</strong>
-            <span class="muted">{ARMS[id].hours}</span>
           </li>
         ))}
         <li class="key muted">Dot: estimate. Dashed line: {Math.round(QUANTILE * 100)}th percentile.</li>
@@ -85,8 +84,8 @@ const embedded = level === 3;
     <section class="block method prose">
       <Sub>Method</Sub>
       <p>
-        Games are split by the hour they ended: 21:00–06:00 on the Mac, the rest on the phone. Each win rate is a Beta posterior
-        (uniform prior, draws count half), and the next game goes to the higher {Math.round(QUANTILE * 100)}th percentile (Bayes-UCB).
+        Each setup's win rate is a Beta posterior (uniform prior, draws count half),
+        and the next game goes to the higher {Math.round(QUANTILE * 100)}th percentile (Bayes-UCB).
       </p>
       <p class="muted">Updated daily. Last update {updated}.</p>
     </section>
