@@ -136,3 +136,9 @@ a:hover { text-decoration-color: var(--accent); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+/* In-page navigation: smooth scrolling that clears the sticky header */
+html { scroll-padding-top: 80px; }
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}

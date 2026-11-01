@@ -3,13 +3,13 @@ import Base from '../layouts/Base.astro';
 import SkillMap from '../components/SkillMap.astro';
 import CutoffLab from '../components/CutoffLab.astro';
 import PostList from '../components/PostList.astro';
-import { profile, jobs, skillAreas } from '../data';
+import { profile, jobs, skillAreas, languages } from '../data';
 import { getPosts } from '../lib';
 
 const posts = (await getPosts()).slice(0, 3);
 ---
 <Base>
-  <section class="hero wrap">
+  <section class="hero wrap" id="home">
     <img class="portrait" src="/portrait.svg" alt="Illustrated portrait of Yuval Herman" width="400" height="400" />
     <div class="intro">
       <h1>Yuval Herman</h1>
@@ -28,14 +28,14 @@ const posts = (await getPosts()).slice(0, 3);
     </div>
   </section>
 
-  <section class="section" id="skills">
+  <section class="section" id="projects">
     <div class="wrap">
-      <h2 class="visually-hidden">Skills and selected work</h2>
+      <h2 class="section-title">Skills and projects</h2>
       <SkillMap />
     </div>
   </section>
 
-  <section class="section">
+  <section class="section" id="lab">
     <div class="wrap">
       <div class="lab-head">
         <h2>Where would you set the cutoff?</h2>
@@ -45,7 +45,7 @@ const posts = (await getPosts()).slice(0, 3);
     </div>
   </section>
 
-  <section class="section">
+  <section class="section" id="experience">
     <div class="wrap section-grid">
       <h2>Experience</h2>
       <div>
@@ -62,17 +62,53 @@ const posts = (await getPosts()).slice(0, 3);
     </div>
   </section>
 
-  {posts.length > 0 && (
-    <section class="section">
-      <div class="wrap section-grid">
-        <h2>Writing</h2>
-        <div>
-          <PostList posts={posts} />
-          <p class="more"><a href="/writing/">All writing</a></p>
-        </div>
+  <section class="section" id="about">
+    <div class="wrap section-grid">
+      <h2>About</h2>
+      <div class="prose about">
+        <p>
+          I started as a financial auditor at UHY Israel and spent time as the controller of a listed
+          financial-services firm. That taught me what a number goes through before it reaches a report,
+          and what it costs when it's wrong.
+        </p>
+        <p>
+          At Dov &amp; Co, a CPA firm, I wrote financial software and blockchain applications and advised on
+          digital-asset regulation and tax. Automating the work I knew from audits led me to data science:
+          the Israel Tech Challenge fellowship in 2020, then Fido Credit Solutions, where I've built risk,
+          fraud and collections models and the agentic workflows around them.
+        </p>
+        <p>
+          Away from work I play competitive chess in a local league, and I treat that like a modeling
+          problem too. The panel on the side of this page picks my next game.
+        </p>
+        <p class="muted">{languages.join(' and ')}.</p>
       </div>
-    </section>
-  )}
+    </div>
+  </section>
+
+  <section class="section" id="writing">
+    <div class="wrap section-grid">
+      <h2>Writing</h2>
+      <div>
+        {posts.length > 0 ? <PostList posts={posts} /> : <p class="muted">First essays are on the way.</p>}
+        <p class="more"><a href="/writing/">All writing</a></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="contact">
+    <div class="wrap contact">
+      <h2>Get in touch</h2>
+      <p class="lede">Open to conversations about credit risk, causal ML and applied AI. Email is the fastest way to reach me.</p>
+      <div class="actions">
+        <a class="button" href={`mailto:${profile.email}`}>{profile.email}</a>
+        <a class="button ghost" href={profile.linkedin}>LinkedIn</a>
+        <a class="button ghost" href={profile.github}>GitHub</a>
+        <a class="button ghost" href="/Yuval_Herman_CV.pdf" download>Download CV</a>
+      </div>
+      <p class="muted where">{profile.location}</p>
+    </div>
+  </section>
 </Base>
 
 <style>
@@ -97,6 +133,13 @@ const posts = (await getPosts()).slice(0, 3);
     .areas, .actions { justify-content: center; }
   }
 
+  .section-title { font-size: var(--step-2); margin-bottom: 28px; }
+  .about p { margin-bottom: 1.1em; }
+  .contact { text-align: center; }
+  .contact h2 { font-size: var(--step-3); }
+  .contact .lede { margin: 0 auto; }
+  .contact .actions { justify-content: center; }
+  .where { margin-top: 24px; }
   .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
   .lab-head { margin-bottom: 28px; }
