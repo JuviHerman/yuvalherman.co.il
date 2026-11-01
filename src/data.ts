@@ -62,7 +62,7 @@ export const skills: { group: string; items: string[] }[] = [
   { group: 'Programming', items: ['Python', 'SQL', 'Gremlin'] },
   {
     group: 'Machine learning',
-    items: ['LightGBM', 'XGBoost', 'CatBoost', 'scikit-learn', 'PyTorch Geometric (GNNs)', 'Prophet', 'Optuna', 'SHAP'],
+    items: ['LightGBM', 'XGBoost', 'CatBoost', 'scikit-learn', 'Prophet', 'Optuna', 'SHAP'],
   },
   {
     group: 'Statistics & experimentation',
@@ -185,7 +185,6 @@ export const skillAreas: SkillArea[] = [
       { code: 'Self Cure', skill: 'Uplift modeling', what: '*Separated* collections customers who repay on their own from those who need a nudge, so treatment *goes* where it changes the outcome.', stack: ['Uplift models', 'Causal inference'] },
       { code: 'Berth Call', skill: 'Optimization', what: '*Chose* which container ship enters port next: $80K a day at anchor against $3K a day of lift work, with food *cleared* first and pickups *timed*.', result: 'Lowest net cost across decision points', stack: ['Decision modeling', 'Cost optimization'] },
       { code: 'Stack Order', skill: 'Ranking', what: '*Ranked* where each container goes in port storage, so urgent ones like food never *wait* under six others for the lift.', stack: ['Ranking', 'Logistics'] },
-      { code: 'The Cutoff', skill: 'Thresholds', what: '*Price* every cell of a confusion matrix, then *slide* to the most profitable threshold.', stack: ['Confusion matrix', 'Net profit'], href: '/#lab', linkLabel: 'Try it' },
       { code: 'Chess Arm Bandits', skill: 'Sampling', what: 'A live two-armed bandit that *picks* my next chess game, Mac at night or phone by day, and *refreshes* daily.', stack: ['Beta posteriors', 'Bayes-UCB', 'chess.com API'], expand: 'chess' },
     ],
     also: [
@@ -214,7 +213,7 @@ export const skillAreas: SkillArea[] = [
     also: [
       { name: 'Languages', items: ['Python', 'SQL', 'Gremlin'] },
       { name: 'Building with AI', items: ['Claude Code', 'MCP', 'AWS Bedrock', 'OpenAI', 'RAG'] },
-      { name: 'Modeling', items: ['LightGBM', 'XGBoost', 'CatBoost', 'scikit-learn', 'PyTorch Geometric', 'Prophet', 'Optuna'] },
+      { name: 'Modeling', items: ['LightGBM', 'XGBoost', 'CatBoost', 'scikit-learn', 'Prophet', 'Optuna'] },
       { name: 'Production', items: ['MLflow', 'SageMaker', 'Docker', 'Lambda', 'Step Functions', 'Git'] },
       { name: 'Data', items: ['AWS', 'Snowflake', 'Redshift', 'Neptune'] },
     ],

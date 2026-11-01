@@ -1,6 +1,6 @@
 /* Apéro-style theme: soft off-white page, white cards, light Fraunces headings in a
    single periwinkle accent, Commissioner for everything else.
-   Green and red stay reserved for approve/decline in the cutoff tool. */
+   Green marks results; red is kept for losses. */
 :root {
   --paper: #f2f2f1;
   --surface: #ffffff;

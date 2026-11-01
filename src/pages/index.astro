@@ -1,7 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
 import SkillMap from '../components/SkillMap.astro';
-import CutoffLab from '../components/CutoffLab.astro';
 import { profile, jobs, skillAreas, languages, domains, talks } from '../data';
 ---
 <Base>
@@ -32,16 +31,6 @@ import { profile, jobs, skillAreas, languages, domains, talks } from '../data';
     </div>
   </section>
 
-  <section class="section" id="lab">
-    <div class="wrap">
-      <div class="lab-head">
-        <h2>Where would you set the cutoff?</h2>
-        <p class="muted">Price each cell, then slide to the most profitable threshold.</p>
-      </div>
-      <CutoffLab />
-    </div>
-  </section>
-
   <section class="section" id="experience">
     <div class="wrap section-grid">
       <h2>Experience</h2>
@@ -64,19 +53,12 @@ import { profile, jobs, skillAreas, languages, domains, talks } from '../data';
       <h2>About</h2>
       <div class="prose about">
         <p>
-          I started as a financial auditor at UHY Israel and spent time as the controller of a listed
-          financial-services firm. That taught me what a number goes through before it reaches a report,
-          and what it costs when it's wrong.
+          I grew up in Kochav Yair and now live in Petah Tikva with my wife, our three girls and a
+          toy poodle.
         </p>
         <p>
-          At Dov &amp; Co, a CPA firm, I wrote financial software and blockchain applications and advised on
-          digital-asset regulation and tax. Automating the work I knew from audits led me to data science:
-          the Israel Tech Challenge fellowship in 2020, then Fido Credit Solutions, where I've built risk,
-          fraud and collections models and the agentic workflows around them.
-        </p>
-        <p>
-          Away from work I play competitive chess in a local league, and I treat that like a modeling
-          problem too: <a href="/#chess">a bandit</a> picks my next game.
+          I play competitive chess, and <a href="/#chess">a bandit</a> picks my next game. I also play
+          neighborhood basketball, and travel, though not as often as I should.
         </p>
         <p class="muted">{languages.join(' and ')}.</p>
       </div>
@@ -144,9 +126,6 @@ import { profile, jobs, skillAreas, languages, domains, talks } from '../data';
   .where { margin-top: 24px; }
   .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
-  .lab-head { margin-bottom: 28px; }
-  .lab-head h2 { font-size: var(--step-2); margin-bottom: 0.2em; }
-  .lab-head p { font-size: 1.15rem; margin: 0; }
 
   .timeline { list-style: none; margin: 0 0 20px; padding: 0; }
   .timeline li { display: grid; grid-template-columns: 12ch minmax(0, 1fr); gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--rule); }
