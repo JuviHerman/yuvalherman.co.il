@@ -119,7 +119,7 @@ export const education = [
 export const languages = ['Hebrew (native)', 'English (native)'];
 
 // "Happy to talk about": conversations I can lead in an interview or over coffee.
-export const talks: { title: string; line: string; items: string[] }[] = [
+export const talks: { title: string; line: string; items: string[]; href?: string; linkLabel?: string; rating?: boolean }[] = [
   {
     title: 'Modeling',
     line: 'From the first feature to a model that runs every day.',
@@ -134,6 +134,14 @@ export const talks: { title: string; line: string; items: string[] }[] = [
     title: 'Evaluation',
     line: 'Knowing whether a model actually earns its keep.',
     items: ['Business-metric evaluation', 'LLM benchmarking', 'Explainability & SHAP', 'Drift monitoring'],
+  },
+  {
+    title: 'Chess',
+    line: 'Off the clock, always up for a position.',
+    items: ['Tactics', 'Strategy'],
+    href: 'https://www.chess.com/member/juvinherm',
+    linkLabel: 'My chess.com profile',
+    rating: true,
   },
 ];
 

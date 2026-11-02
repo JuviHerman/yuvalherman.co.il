@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import SkillMap from '../components/SkillMap.astro';
 import { profile, jobs, skillAreas, languages, domains, talks } from '../data';
+import { rating } from '../chess';
 ---
 <Base>
   <section class="hero wrap" id="home">
@@ -79,6 +80,8 @@ import { profile, jobs, skillAreas, languages, domains, talks } from '../data';
             <h3>{t.title}</h3>
             <p class="talk-line">{t.line}</p>
             <ul class="talk-items">{t.items.map((i) => <li>{i}</li>)}</ul>
+            {t.rating && rating && <p class="talk-rating"><span class="num">{rating}</span> rating on chess.com, updated daily</p>}
+            {t.href && <a class="talk-link" href={t.href}>{t.linkLabel ?? 'More'} →</a>}
           </li>
         ))}
         <li class="talk open">
@@ -160,8 +163,10 @@ import { profile, jobs, skillAreas, languages, domains, talks } from '../data';
     background: color-mix(in srgb, var(--accent) 10%, transparent);
     border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
   }
-  .talk.open { background: transparent; border: 1px dashed color-mix(in srgb, var(--accent) 45%, var(--rule)); }
+  .talk.open { grid-column: 1 / -1; background: transparent; border: 1px dashed color-mix(in srgb, var(--accent) 45%, var(--rule)); }
   .talk.open h3 { font-style: italic; }
+  .talk-rating { margin: 4px 0 0; color: var(--muted); font-size: 0.9rem; }
+  .talk-rating .num { font: 400 var(--step-1)/1 var(--font-heading); color: var(--ink); margin-right: 4px; }
   .talk-link { margin-top: auto; color: var(--accent); text-decoration: none; align-self: flex-start; }
   .talk-link:hover { text-decoration: underline; text-underline-offset: 0.3em; }
 </style>
