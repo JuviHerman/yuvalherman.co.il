@@ -73,14 +73,20 @@ import { profile, jobs, skillAreas, languages, domains, talks } from '../data';
   <section class="section" id="topics">
     <div class="wrap section-grid">
       <h2>Happy to talk about</h2>
-      <div class="talks">
+      <ul class="talks">
         {talks.map((t) => (
-          <div>
-            <p class="caps talk-group">{t.group}</p>
-            <ul>{t.points.map((p) => <li>{p}</li>)}</ul>
-          </div>
+          <li class="talk">
+            <h3>{t.title}</h3>
+            <p class="talk-line">{t.line}</p>
+            <ul class="talk-items">{t.items.map((i) => <li>{i}</li>)}</ul>
+          </li>
         ))}
-      </div>
+        <li class="talk open">
+          <h3>Something else?</h3>
+          <p class="talk-line">The best conversations wander. Bring a problem.</p>
+          <a class="talk-link" href="#contact">Get in touch →</a>
+        </li>
+      </ul>
     </div>
   </section>
 
@@ -138,9 +144,24 @@ import { profile, jobs, skillAreas, languages, domains, talks } from '../data';
   .years { font-family: var(--font-display); font-size: 0.95rem; padding-top: 0.15em; }
   .timeline strong { font-weight: 550; }
 
-  .talks { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 28px 40px; }
-  .talk-group { color: var(--accent); margin: 0 0 10px; }
-  .talks ul { margin: 0; padding: 0; list-style: none; }
-  .talks li { position: relative; padding: 0 0 10px 18px; line-height: 1.5; }
-  .talks li::before { content: ''; position: absolute; left: 0; top: 0.62em; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); opacity: 0.55; }
+  .talks { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 18px; }
+  .talk {
+    display: flex; flex-direction: column; gap: 10px; padding: 24px 22px 22px;
+    background: var(--surface); border: 1px solid var(--rule); border-radius: 14px;
+    border-top: 3px solid var(--accent);
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+  }
+  .talk:hover { box-shadow: 0 8px 24px rgb(0 0 0 / 0.07); transform: translateY(-2px); }
+  .talk h3 { font: 400 var(--step-2)/1.1 var(--font-heading); color: var(--accent); margin: 0; }
+  .talk-line { color: var(--muted); font-size: 0.98rem; line-height: 1.5; margin: 0; }
+  .talk-items { list-style: none; margin: 6px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+  .talk-items li {
+    font-size: 0.9rem; color: var(--ink); padding: 5px 12px; border-radius: 999px;
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+    border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
+  }
+  .talk.open { background: transparent; border: 1px dashed color-mix(in srgb, var(--accent) 45%, var(--rule)); }
+  .talk.open h3 { font-style: italic; }
+  .talk-link { margin-top: auto; color: var(--accent); text-decoration: none; align-self: flex-start; }
+  .talk-link:hover { text-decoration: underline; text-underline-offset: 0.3em; }
 </style>

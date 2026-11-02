@@ -119,43 +119,21 @@ export const education = [
 export const languages = ['Hebrew (native)', 'English (native)'];
 
 // "Happy to talk about": conversations I can lead in an interview or over coffee.
-export const talks: { group: string; points: string[] }[] = [
+export const talks: { title: string; line: string; items: string[] }[] = [
   {
-    group: 'Models and money',
-    points: [
-      'Why ROC-AUC isn’t a business metric, and what to put a price on instead.',
-      'Setting a cutoff when a missed default and a declined good customer cost very different amounts.',
-      'Rules or models in fraud, and when a simple rule wins.',
-      'Finding risk in who is connected to whom: graph features in credit.',
-      'Forecasts Finance can plan on, and how to talk about their uncertainty.',
-    ],
+    title: 'Modeling',
+    line: 'From the first feature to a model that runs every day.',
+    items: ['Machine learning', 'Causal inference', 'GenAI integrations', 'Batch vs real-time trade-offs'],
   },
   {
-    group: 'Decisions under uncertainty',
-    points: [
-      'Who will pay, versus who will pay because we called: uplift in collections.',
-      'Self-cure: when the best treatment is no treatment at all.',
-      'Bandits or A/B tests, and how to know when to stop exploring.',
-      'Declaring a winner: probability of being best, and why I wait for 95%.',
-      'Turning $80K a day at anchor against $3K a day of cranes into a scheduling rule.',
-      'Ranking under physical constraints: which container belongs on top.',
-    ],
+    title: 'Statistics',
+    line: 'Learning fast while still making good calls.',
+    items: ['Multi-armed bandits', 'Sampling methods', 'A/B testing', 'Bayesian inference'],
   },
   {
-    group: 'GenAI in practice',
-    points: [
-      'Evaluating LLMs on a real task: accuracy, price and latency together.',
-      'Where agents speed up data science work, and where a human must sign off.',
-      'Building a content pipeline with LLMs, and the quality checks it needs.',
-    ],
-  },
-  {
-    group: 'How I work',
-    points: [
-      'Reading a model like a ledger: what an auditor’s eye catches in data.',
-      'Owning a model from the first feature to monitoring in production.',
-      'Shipping a product on my own, from idea to the App Store.',
-    ],
+    title: 'Evaluation',
+    line: 'Knowing whether a model actually earns its keep.',
+    items: ['Business-metric evaluation', 'LLM benchmarking', 'Explainability & SHAP', 'Drift monitoring'],
   },
 ];
 
