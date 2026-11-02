@@ -5,7 +5,7 @@ Personal website of Yuval Herman, built with [Astro](https://astro.build) and de
 ## Editing
 
 - Profile, jobs, skills, projects: `src/data.ts`
-- Talking points: edit `talks` in `src/data.ts`
+- Topics cards: edit `talks` in `src/data.ts`
 - CV PDF: `public/Yuval_Herman_CV.pdf`. Regenerate it by printing `/cv/` from Chrome while `npm run preview` is running.
 
 ## Local development
